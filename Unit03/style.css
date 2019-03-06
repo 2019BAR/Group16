@@ -1,0 +1,77 @@
+
+.caption {
+  color: #777;
+  margin-top: 10px;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1;
+}
+pre code {
+  white-space: inherit;
+}
+p,li {
+  font-family: "Trebuchet MS", "Consolas", "微軟正黑體", "Microsoft JhengHei";
+}
+
+.r{
+  line-height: 1.2;
+}
+
+.qiz {
+  line-height: 1.75;
+  background: #f0f0f0;
+  border-left: 12px solid #cce6ff;
+  padding: 4px;
+  padding-left: 10px;
+}
+
+.wwl {
+  line-height: 1.75;
+  background: #f0f0f0;
+  border-left: 12px solid #ffeb99;
+  padding: 4px;
+  padding-left: 10px;
+}
+
+title{
+  color: #cc0000;
+  font-family: "Trebuchet MS", "Consolas", "微軟正黑體", "Microsoft JhengHei";
+}
+
+body{
+  font-family: "Trebuchet MS", "Consolas", "微軟正黑體", "Microsoft JhengHei";
+}
+
+h1,h2,h3,h4,h5{
+  color: #0066ff;
+  font-family: "Trebuchet MS", "Consolas", "微軟正黑體", "Microsoft JhengHei";
+}
+
+
+h3{
+  color: #008800;
+  background: #e6ffe6;
+  line-height: 2;
+  font-weight: bold;
+}
+
+h5{
+  color: #006000;
+  background: #f8f8f8;
+  line-height: 1.5;
+  font-weight: bold;
+}
+
+z {line-height: 1.75;
+   color: #000000;
+   background: #ffff99;
+   font-family: "Trebuchet MS", "微軟正黑體", "Microsoft JhengHei";
+   padding: 2px;
+   }
+
+
