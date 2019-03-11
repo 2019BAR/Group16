@@ -171,25 +171,25 @@ time[hw1$Arrest] %>% format('%m') %>% table() %>% sort()
 【3.1】 (a) In general, does it look like crime increases or decreases from 2002 - 2012? (b) In general, does it look like crime increases or decreases from 2005 - 2008? (c) In general, does it look like crime increases or decreases from 2009 - 2011?
 ```{r}
 # 2002-2012下降、2005-2008下降、2009-2011上升
-hist(ts,'year',las=2)
+hist(time,'year',las=2)
 ```
 
 【3.2】 Does it look like there were more crimes for which arrests were made in the first half of the time period or the second half of the time period?
 ```{r}
 # FALSE多於TRUE，後半年犯罪率較高
-table(ts > as.POSIXct("2007-01-01"))
+table(time > as.POSIXct("2007-01-01"))
 ```
 
 【3.3】 For what proportion of motor vehicle thefts in 2001 was an arrest made?
 ```{r}
 # 0.104
-table(D$Arrest, format(ts,'%Y')) %>% prop.table(2) %>% round(3)
+table(hw1$Arrest, format(time,'%Y')) %>% prop.table(2) %>% round(3)
 ```
 
 【3.4】 For what proportion of motor vehicle thefts in 2007 was an arrest made?
 ```{r}
 # 0.085
-tapply(D$Arrest, format(ts,'%Y'), mean) %>% round(3)
+tapply(hw1$Arrest, format(time,'%Y'), mean) %>% round(3)
 ```
 
 【3.5】 For what proportion of motor vehicle thefts in 2012 was an arrest made?
