@@ -150,7 +150,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">AS3-3: 美國的人口統計和就業資料</h1>
 <h4 class="author"><em>第16組</em></h4>
-<h4 class="date"><em>2019-03-11 19:50:51</em></h4>
+<h4 class="date"><em>2019-03-11 23:24:53</em></h4>
 
 </div>
 
@@ -184,7 +184,7 @@ CPS&lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="s
 <span class="kw">nrow</span>(CPS)</code></pre></div>
 <pre><code>[1] 131302</code></pre>
 <p><strong>§ 1.2</strong> Among the interviewees with a value reported for the Industry variable, what is the most common industry of employment? Please enter the name exactly how you see it.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Education and health services</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Educational and health services 受訪者最多（屏除NA值），因為在社會中服務業的比例也最高</span>
 <span class="kw">summary</span>(CPS<span class="op">$</span>Industry)</code></pre></div>
 <pre><code>Agriculture, forestry, fishing, and hunting                                Armed forces 
                                        1307                                          29 
@@ -203,19 +203,19 @@ CPS&lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="s
                                        NA's 
                                       65060 </code></pre>
 <p><strong>§ 1.3</strong> Which state has the fewest interviewees?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># New Mexico (但NA值最多)</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># New Mexico (但NA值最多)，位於美國中南部，農業產業居多，地廣人希，受訪者就比較少</span>
 <span class="kw">head</span>(<span class="kw">sort</span>(<span class="kw">table</span>(CPS<span class="op">$</span>State)))</code></pre></div>
 <pre><code>
    New Mexico       Montana   Mississippi       Alabama West Virginia      Arkansas 
          1102          1214          1230          1376          1409          1421 </code></pre>
 <p>Which state has the largest number of interviewees?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># California</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># California，人口本來就比較多，服務業也較發達</span>
 <span class="kw">sort</span>(<span class="kw">table</span>(CPS<span class="op">$</span>State)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>()</code></pre></div>
 <pre><code>
     Illinois Pennsylvania      Florida     New York        Texas   California 
         3912         3930         5149         5595         7077        11570 </code></pre>
 <p><strong>§ 1.4</strong> What proportion of interviewees are citizens of the United States?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0.942194</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0.942194，受訪者幾乎全是美國公民</span>
 <span class="kw">prop.table</span>(<span class="kw">table</span>(CPS<span class="op">$</span>Citizenship))</code></pre></div>
 <pre><code>
      Citizen, Native Citizen, Naturalized          Non-Citizen 
@@ -233,7 +233,8 @@ CPS&lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="s
 <li>Pacific Islander</li>
 <li>White</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(CPS<span class="op">$</span>Race,CPS<span class="op">$</span>Hispanic)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># American Indian、Black、Multiracial、White為同時是西班牙裔又超過250人的種族</span>
+<span class="kw">table</span>(CPS<span class="op">$</span>Race,CPS<span class="op">$</span>Hispanic)</code></pre></div>
 <pre><code>                  
                        0     1
   American Indian   1129   304
@@ -264,7 +265,8 @@ CPS&lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="s
 <li>EmploymentStatus</li>
 <li>Industry</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colSums</span>(<span class="kw">is.na</span>(CPS))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Married、Education、EmploymentStatus、MetroAreaCode、Industry有遺漏值，可能比較難分類，自我認同有問題</span>
+<span class="kw">colSums</span>(<span class="kw">is.na</span>(CPS))</code></pre></div>
 <pre><code> PeopleInHousehold             Region              State      MetroAreaCode 
                  0                  0                  0              34238 
                Age            Married                Sex          Education 
@@ -281,7 +283,7 @@ CPS&lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="s
 <li>The Married variable being missing is related to the Citizenship value for the interviewee.</li>
 <li>The Married variable being missing is not related to the Region, Sex, Age, or Citizenship value for the interviewee.</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 由下可知Age的精準度較高</span>
 <span class="kw">lapply</span>(CPS[<span class="kw">c</span>(<span class="st">'Region'</span>,<span class="st">'Sex'</span>,<span class="st">'Age'</span>,<span class="st">'Citizenship'</span>)], 
        <span class="cf">function</span>(x) <span class="kw">table</span>(<span class="kw">is.na</span>(CPS<span class="op">$</span>Married), x))</code></pre></div>
 <pre><code>$Region
@@ -328,7 +330,7 @@ $Citizenship
   FALSE           91956                 6910        7098
   TRUE            24683                  163         492</code></pre>
 <p><strong>§ 2.3</strong> How many states had all interviewees living in a non-metropolitan area (aka they have a missing MetroAreaCode value)? For this question, treat the District of Columbia as a state (even though it is not technically a state).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2個地方沒捷運，Alaska和Wyoming，這兩個地方偏僻到蓋捷運只有北極熊和美洲野牛會搭</span>
 <span class="kw">table</span>(<span class="kw">is.na</span>(CPS<span class="op">$</span>MetroAreaCode), CPS<span class="op">$</span>State)</code></pre></div>
 <pre><code>       
         Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware
@@ -359,9 +361,9 @@ $Citizenship
   FALSE           344      1882       0
   TRUE           1065       804    1624</code></pre>
 <p>How many states had all interviewees living in a metropolitan area? Again, treat the District of Columbia as a state.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3個地方是所有人都有捷運搭，別是Columbia、New Jersey、Rhode Island，因為土地面積比較小</span></code></pre></div>
 <p><strong>§ 2.4</strong> Which region of the United States has the largest proportion of interviewees living in a non-metropolitan area?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Midwest有捷運的比例最低，因為美國中部都是國家公園</span>
 <span class="kw">sort</span>(<span class="kw">tapply</span>(<span class="kw">is.na</span>(CPS<span class="op">$</span>MetroAreaCode), CPS<span class="op">$</span>Region, mean))</code></pre></div>
 <pre><code>Northeast     South      West   Midwest 
    0.2162    0.2378    0.2437    0.3479 </code></pre>
@@ -371,7 +373,7 @@ $Citizenship
 <pre><code>     Wisconsin        Indiana South Carolina      Minnesota       Oklahoma       Missouri 
      0.0006701      0.0085828      0.0130277      0.0150685      0.0276428      0.0286713 </code></pre>
 <p>Which state has the largest proportion of non-metropolitan interviewees, ignoring states where all interviewees were non-metropolitan?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Montana</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Montana，排除掉完全沒捷運的地方，倒數第三州為Montana，搞農業的</span>
 <span class="kw">tail</span>(<span class="kw">sort</span>(<span class="kw">tapply</span>(<span class="kw">is.na</span>(CPS<span class="op">$</span>MetroAreaCode), CPS<span class="op">$</span>State, mean)))</code></pre></div>
 <pre><code> South Dakota  North Dakota West Virginia       Montana        Alaska       Wyoming 
        0.7025        0.7374        0.7559        0.8361        1.0000        1.0000 </code></pre>
@@ -381,13 +383,13 @@ $Citizenship
 <div id="section-3-integrating-metropolitan-area-data" class="section level3">
 <h3>Section-3 Integrating Metropolitan Area Data</h3>
 <p><strong>§ 3.1</strong> How many observations (codes for metropolitan areas) are there in MetroAreaMap?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 271</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 271筆</span>
 <span class="kw">setwd</span>(<span class="st">&quot;~/Desktop/unit03/data&quot;</span>)
 MAC &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;MetroAreaCodes.csv&quot;</span>)
 <span class="kw">nrow</span>(MAC)</code></pre></div>
 <pre><code>[1] 271</code></pre>
 <p>How many observations (codes for countries) are there in CountryMap?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 149</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 149筆</span>
 <span class="kw">setwd</span>(<span class="st">&quot;~/Desktop/unit03/data&quot;</span>)
 CC &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;CountryCodes.csv&quot;</span>)
 <span class="kw">nrow</span>(CC)</code></pre></div>
@@ -400,7 +402,7 @@ CPS &lt;-<span class="st"> </span><span class="kw">merge</span>(CPS, MAC, <span 
 <span class="kw">sum</span>(<span class="kw">is.na</span>(CPS<span class="op">$</span>MetroArea))</code></pre></div>
 <pre><code>[1] 34238</code></pre>
 <p><strong>§ 3.3</strong> Which of the following metropolitan areas has the largest number of interviewees?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Boston-Cambridge-Quincy</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># New York-Northern New Jersey-Long Island, NY-NJ-PA</span>
 <span class="kw">tail</span>(<span class="kw">sort</span>(<span class="kw">table</span>(CPS<span class="op">$</span>MetroArea)))</code></pre></div>
 <pre><code>
               Providence-Fall River-Warwick, MA-RI 
@@ -416,14 +418,14 @@ CPS &lt;-<span class="st"> </span><span class="kw">merge</span>(CPS, MAC, <span 
 New York-Northern New Jersey-Long Island, NY-NJ-PA 
                                               5409 </code></pre>
 <p><strong>§ 3.4</strong> Which metropolitan area has the highest proportion of interviewees of Hispanic ethnicity?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Laredo, TX</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Laredo, TX，這兩個地方的西班牙裔受訪者較多</span>
 <span class="kw">tail</span>(<span class="kw">sort</span>(<span class="kw">tapply</span>(CPS<span class="op">$</span>Hispanic,CPS<span class="op">$</span>MetroArea,mean)))</code></pre></div>
 <pre><code>           San Antonio, TX              El Centro, CA                El Paso, TX 
                     0.6442                     0.6869                     0.7910 
  Brownsville-Harlingen, TX McAllen-Edinburg-Pharr, TX                 Laredo, TX 
                     0.7975                     0.9487                     0.9663 </code></pre>
 <p><strong>§ 3.5</strong> Determine the number of metropolitan areas in the United States from which at least 20% of interviewees are Asian.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 4</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 4個地方，Vallejo-Fairfield, CA、San Jose-Sunnyvale-Santa Clara, CA、San Francisco-Oakland-Fremont, CA、Honolulu, HI</span>
 <span class="kw">tail</span>(<span class="kw">sort</span>(<span class="kw">tapply</span>(CPS<span class="op">$</span>Race <span class="op">==</span><span class="st"> &quot;Asian&quot;</span>, CPS<span class="op">$</span>MetroArea, mean)))</code></pre></div>
 <pre><code>                 Warner Robins, GA                         Fresno, CA 
                             0.1667                             0.1848 
@@ -432,7 +434,7 @@ New York-Northern New Jersey-Long Island, NY-NJ-PA
  San Francisco-Oakland-Fremont, CA                       Honolulu, HI 
                             0.2468                             0.5019 </code></pre>
 <p><strong>§ 3.6</strong> Passing na.rm=TRUE to the tapply function, determine which metropolitan area has the smallest proportion of interviewees who have received no high school diploma.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#  Iowa City, IA</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#  Iowa City, IA的人有捷運搭而且學歷較低</span>
 <span class="kw">head</span>(<span class="kw">sort</span>(<span class="kw">tapply</span>(CPS<span class="op">$</span>Education <span class="op">==</span><span class="st"> &quot;No high school diploma&quot;</span>, CPS<span class="op">$</span>MetroArea, mean, <span class="dt">na.rm=</span>T)))</code></pre></div>
 <pre><code>           Iowa City, IA        Bowling Green, KY    Kalamazoo-Portage, MI 
                  0.02913                  0.03704                  0.05051 
@@ -447,22 +449,22 @@ New York-Northern New Jersey-Long Island, NY-NJ-PA
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Country</span>
 CPS =<span class="st"> </span><span class="kw">merge</span>(CPS, CC, <span class="dt">by.x=</span><span class="st">&quot;CountryOfBirthCode&quot;</span>, <span class="dt">by.y=</span><span class="st">&quot;Code&quot;</span>, <span class="dt">all.x=</span><span class="ot">TRUE</span>)</code></pre></div>
 <p>How many interviewees have a missing value for the new metropolitan area variable?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 176</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 176個受訪者不想表態自己的國家</span>
 <span class="kw">sum</span>(<span class="kw">is.na</span>(CPS<span class="op">$</span>Country))</code></pre></div>
 <pre><code>[1] 176</code></pre>
 <p><strong>§ 4.2</strong> Among all interviewees born outside of North America, which country was the most common place of birth?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Philippines</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Mexico為美國最大移入國，所以川普才要蓋牆，但如果將墨西哥視為北美，則最大移入國為菲律賓</span>
 <span class="kw">tail</span>(<span class="kw">sort</span>(<span class="kw">table</span>(CPS<span class="op">$</span>Country)))</code></pre></div>
 <pre><code>
   Puerto Rico         China         India   Philippines        Mexico United States 
           518           581           770           839          3921        115063 </code></pre>
 <p><strong>§ 4.3</strong> What proportion of the interviewees from the “New York-Northern New Jersey-Long Island, NY-NJ-PA” metropolitan area have a country of birth that is not the United States?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0.3087</span>
-area =<span class="st"> &quot;New York-Northern New Jersey-Long Island, NY-NJ-PA&quot;</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0.3087住在NY-NJ-PA的人出生地非美國</span>
+area &lt;-<span class="st"> &quot;New York-Northern New Jersey-Long Island, NY-NJ-PA&quot;</span>
 <span class="kw">mean</span>(CPS<span class="op">$</span>Country[CPS<span class="op">$</span>MetroArea<span class="op">==</span>area] <span class="op">!=</span><span class="st"> &quot;United States&quot;</span>, <span class="dt">na.rm=</span>T)</code></pre></div>
 <pre><code>[1] 0.3087</code></pre>
 <p><strong>§ 4.4</strong> Which metropolitan area has the largest number (note – not proportion) of interviewees with a country of birth in India?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># New York-Northern New Jersey-Long Island, NY-NJ-PA</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># New York-Northern New Jersey-Long Island, NY-NJ-PA有最多人印度裔</span>
 <span class="kw">tail</span>(<span class="kw">sort</span>(<span class="kw">tapply</span>(CPS<span class="op">$</span>Country <span class="op">==</span><span class="st"> 'India'</span>, CPS<span class="op">$</span>MetroArea, sum, <span class="dt">na.rm=</span>T)))</code></pre></div>
 <pre><code>                 San Francisco-Oakland-Fremont, CA 
                                                 27 
@@ -477,7 +479,7 @@ area =<span class="st"> &quot;New York-Northern New Jersey-Long Island, NY-NJ-PA
 New York-Northern New Jersey-Long Island, NY-NJ-PA 
                                                 96 </code></pre>
 <p>In Brazil?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Boston-Cambridge-Quincy, MA-NH</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Boston-Cambridge-Quincy, MA-NH有最多巴西裔</span>
 <span class="kw">tail</span>(<span class="kw">sort</span>(<span class="kw">tapply</span>(CPS<span class="op">$</span>Country <span class="op">==</span><span class="st"> 'Brazil'</span>, CPS<span class="op">$</span>MetroArea, sum, <span class="dt">na.rm=</span>T)))</code></pre></div>
 <pre><code>                   Bridgeport-Stamford-Norwalk, CT 
                                                  7 
@@ -492,7 +494,7 @@ New York-Northern New Jersey-Long Island, NY-NJ-PA
                     Boston-Cambridge-Quincy, MA-NH 
                                                 18 </code></pre>
 <p>In Somalia?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Minneapolis-St Paul-Bloomington, MN-WI</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Minneapolis-St Paul-Bloomington, MN-WI有最多索馬利亞裔</span>
 <span class="kw">tail</span>(<span class="kw">sort</span>(<span class="kw">tapply</span>(CPS<span class="op">$</span>Country <span class="op">==</span><span class="st"> 'Somalia'</span>, CPS<span class="op">$</span>MetroArea, sum, <span class="dt">na.rm=</span>T)))</code></pre></div>
 <pre><code>                          Columbus, OH                           Fargo, ND-MN 
                                      5                                      5 

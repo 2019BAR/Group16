@@ -55,25 +55,25 @@ nrow(CPS)
 
 __§ 1.2__ Among the interviewees with a value reported for the Industry variable, what is the most common industry of employment? Please enter the name exactly how you see it.
 ```{r}
-# Education and health services
+# Educational and health services 受訪者最多（屏除NA值），因為在社會中服務業的比例也最高
 summary(CPS$Industry)
 ```
 
 __§ 1.3__ Which state has the fewest interviewees?
 ```{r}
-# New Mexico (但NA值最多)
+# New Mexico (但NA值最多)，位於美國中南部，農業產業居多，地廣人希，受訪者就比較少
 head(sort(table(CPS$State)))
 ```
 
 Which state has the largest number of interviewees?
 ```{r}
-# California
+# California，人口本來就比較多，服務業也較發達
 sort(table(CPS$State)) %>% tail()
 ```
 
 __§ 1.4__ What proportion of interviewees are citizens of the United States?
 ```{r}
-# 0.942194
+# 0.942194，受訪者幾乎全是美國公民
 prop.table(table(CPS$Citizenship))
 prop.table(table(CPS$Citizenship=="Non-Citizen"))
 ```
@@ -88,6 +88,7 @@ __§ 1.5__ For which races are there at least 250 interviewees in the CPS datase
 + White
 
 ```{r}
+# American Indian、Black、Multiracial、White為同時是西班牙裔又超過250人的種族
 table(CPS$Race,CPS$Hispanic)
 ```
 
@@ -115,6 +116,7 @@ __§ 2.1__ Which variables have at least one interviewee with a missing (NA) val
 + Industry
 
 ```{r}
+# Married、Education、EmploymentStatus、MetroAreaCode、Industry有遺漏值，可能比較難分類，自我認同有問題
 colSums(is.na(CPS))
 ```
 
@@ -127,7 +129,7 @@ __§ 2.2__  Which is the most accurate:
 + The Married variable being missing is not related to the Region, Sex, Age, or Citizenship value for the interviewee.
 
 ```{r}
-#
+# 由下可知Age的精準度較高
 lapply(CPS[c('Region','Sex','Age','Citizenship')], 
        function(x) table(is.na(CPS$Married), x))
 ```
@@ -135,18 +137,18 @@ lapply(CPS[c('Region','Sex','Age','Citizenship')],
 
 __§ 2.3__ How many states had all interviewees living in a non-metropolitan area (aka they have a missing MetroAreaCode value)? For this question, treat the District of Columbia as a state (even though it is not technically a state).
 ```{r}
-# 2
+# 2個地方沒捷運，Alaska和Wyoming，這兩個地方偏僻到蓋捷運只有北極熊和美洲野牛會搭
 table(is.na(CPS$MetroAreaCode), CPS$State)
 ```
 
 How many states had all interviewees living in a metropolitan area? Again, treat the District of Columbia as a state.
 ```{r}
-# 3
+# 3個地方是所有人都有捷運搭，別是Columbia、New Jersey、Rhode Island，因為土地面積比較小
 ```
 
 __§ 2.4__ Which region of the United States has the largest proportion of interviewees living in a non-metropolitan area?
 ```{r}
-#
+# Midwest有捷運的比例最低，因為美國中部都是國家公園
 sort(tapply(is.na(CPS$MetroAreaCode), CPS$Region, mean))
 ```
 
@@ -158,7 +160,7 @@ head(sort(abs(0.3 - tapply(is.na(CPS$MetroAreaCode), CPS$State, mean))))
 
 Which state has the largest proportion of non-metropolitan interviewees, ignoring states where all interviewees were non-metropolitan?
 ```{r}
-# Montana
+# Montana，排除掉完全沒捷運的地方，倒數第三州為Montana，搞農業的
 tail(sort(tapply(is.na(CPS$MetroAreaCode), CPS$State, mean)))
 ```
 
@@ -170,7 +172,7 @@ tail(sort(tapply(is.na(CPS$MetroAreaCode), CPS$State, mean)))
 
 __§ 3.1__ How many observations (codes for metropolitan areas) are there in MetroAreaMap?
 ```{r}
-# 271
+# 271筆
 setwd("~/Desktop/unit03/data")
 MAC <- read.csv("MetroAreaCodes.csv")
 nrow(MAC)
@@ -178,7 +180,7 @@ nrow(MAC)
 
 How many observations (codes for countries) are there in CountryMap?
 ```{r}
-# 149
+# 149筆
 setwd("~/Desktop/unit03/data")
 CC <- read.csv("CountryCodes.csv")
 nrow(CC)
@@ -198,25 +200,25 @@ sum(is.na(CPS$MetroArea))
 
 __§ 3.3__ Which of the following metropolitan areas has the largest number of interviewees?
 ```{r}
-# Boston-Cambridge-Quincy
+# New York-Northern New Jersey-Long Island, NY-NJ-PA
 tail(sort(table(CPS$MetroArea)))
 ```
 
 __§ 3.4__ Which metropolitan area has the highest proportion of interviewees of Hispanic ethnicity?
 ```{r}
-# Laredo, TX
+# Laredo, TX，這兩個地方的西班牙裔受訪者較多
 tail(sort(tapply(CPS$Hispanic,CPS$MetroArea,mean)))
 ```
 
 __§ 3.5__ Determine the number of metropolitan areas in the United States from which at least 20% of interviewees are Asian.
 ```{r}
-# 4
+# 4個地方，Vallejo-Fairfield, CA、San Jose-Sunnyvale-Santa Clara, CA、San Francisco-Oakland-Fremont, CA、Honolulu, HI
 tail(sort(tapply(CPS$Race == "Asian", CPS$MetroArea, mean)))
 ```
 
 __§ 3.6__  Passing na.rm=TRUE to the tapply function, determine which metropolitan area has the smallest proportion of interviewees who have received no high school diploma.
 ```{r}
-#  Iowa City, IA
+#  Iowa City, IA的人有捷運搭而且學歷較低
 head(sort(tapply(CPS$Education == "No high school diploma", CPS$MetroArea, mean, na.rm=T)))
 ```
 
@@ -235,38 +237,38 @@ CPS = merge(CPS, CC, by.x="CountryOfBirthCode", by.y="Code", all.x=TRUE)
 
 How many interviewees have a missing value for the new metropolitan area variable?
 ```{r}
-# 176
+# 176個受訪者不想表態自己的國家
 sum(is.na(CPS$Country))
 ```
 
 __§ 4.2__ Among all interviewees born outside of North America, which country was the most common place of birth?
 ```{r}
-# Philippines
+# Mexico為美國最大移入國，所以川普才要蓋牆，但如果將墨西哥視為北美，則最大移入國為菲律賓
 tail(sort(table(CPS$Country)))
 ```
 
 __§ 4.3__ What proportion of the interviewees from the "New York-Northern New Jersey-Long Island, NY-NJ-PA" metropolitan area have a country of birth that is not the United States? 
 ```{r}
-# 0.3087
-area = "New York-Northern New Jersey-Long Island, NY-NJ-PA"
+# 0.3087住在NY-NJ-PA的人出生地非美國
+area <- "New York-Northern New Jersey-Long Island, NY-NJ-PA"
 mean(CPS$Country[CPS$MetroArea==area] != "United States", na.rm=T)
 ```
 
 __§ 4.4__ Which metropolitan area has the largest number (note -- not proportion) of interviewees with a country of birth in India? 
 ```{r}
-# New York-Northern New Jersey-Long Island, NY-NJ-PA
+# New York-Northern New Jersey-Long Island, NY-NJ-PA有最多人印度裔
 tail(sort(tapply(CPS$Country == 'India', CPS$MetroArea, sum, na.rm=T)))
 ```
 
 In Brazil?
 ```{r}
-# Boston-Cambridge-Quincy, MA-NH
+# Boston-Cambridge-Quincy, MA-NH有最多巴西裔
 tail(sort(tapply(CPS$Country == 'Brazil', CPS$MetroArea, sum, na.rm=T)))
 ```
 
 In Somalia?
 ```{r}
-# Minneapolis-St Paul-Bloomington, MN-WI
+# Minneapolis-St Paul-Bloomington, MN-WI有最多索馬利亞裔
 tail(sort(tapply(CPS$Country == 'Somalia', CPS$MetroArea, sum, na.rm=T)))
 ```
 

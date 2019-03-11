@@ -150,7 +150,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">AS3-2: 股市動態</h1>
 <h4 class="author"><em>第16組</em></h4>
-<h4 class="date"><em>2019-03-11 19:50:35</em></h4>
+<h4 class="date"><em>2019-03-11 23:24:31</em></h4>
 
 </div>
 
@@ -177,15 +177,15 @@ $(document).ready(function () {
 <div id="section-1-summary-statistics" class="section level3">
 <h3>Section-1 Summary Statistics</h3>
 <p><strong>§ 1.1</strong> Our five datasets all have the same number of observations. How many observations are there in each data set?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 每份資料都有960筆觀察值</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 每份資料都有480筆觀察值</span>
 <span class="kw">setwd</span>(<span class="st">&quot;~/Desktop/unit03/data&quot;</span>)
 IBM &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;IBMStock.csv&quot;</span>)
 GE&lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;GEStock.csv&quot;</span>)
 Procter &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;ProcterGambleStock.csv&quot;</span>)
 Cola &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;CocaColaStock.csv&quot;</span>)
 Boeing  &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;BoeingStock.csv&quot;</span>)
-<span class="kw">nrow</span>(IBM)<span class="op">*</span><span class="kw">ncol</span>(IBM)</code></pre></div>
-<pre><code>[1] 960</code></pre>
+<span class="kw">nrow</span>(IBM)</code></pre></div>
+<pre><code>[1] 480</code></pre>
 <p><strong>§ 1.2</strong> What is the earliest year in our datasets?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 五家公司最早資料皆為1970-01-01</span>
 Boeing_time =<span class="st"> </span><span class="kw">as.Date</span>(Boeing<span class="op">$</span>Date,<span class="st">&quot;%m/%d/%y&quot;</span>)
@@ -209,11 +209,11 @@ Procter_time =<span class="st"> </span><span class="kw">as.Date</span>(Procter<s
 <pre><code>        Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
 &quot;1970-01-01&quot; &quot;1979-12-24&quot; &quot;1989-12-16&quot; &quot;1989-12-15&quot; &quot;1999-12-08&quot; &quot;2009-12-01&quot; </code></pre>
 <p><strong>§ 1.3</strong> What is the latest year in our datasets?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2020-12-01</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2009-12-01</span></code></pre></div>
 <p><strong>§ 1.4</strong> What is the mean stock price of IBM over this time period?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 112.1</span>
-<span class="kw">median</span>(IBM<span class="op">$</span>StockPrice)</code></pre></div>
-<pre><code>[1] 112.1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 144.375</span>
+<span class="kw">mean</span>(IBM<span class="op">$</span>StockPrice)</code></pre></div>
+<pre><code>[1] 144.4</code></pre>
 <p><strong>§ 1.5</strong> What is the minimum stock price of General Electric (GE) over this time period?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 9.294</span>
 <span class="kw">min</span>(GE<span class="op">$</span>StockPrice)</code></pre></div>
@@ -236,14 +236,12 @@ Procter_time =<span class="st"> </span><span class="kw">as.Date</span>(Procter<s
 <div id="section-2-visualizing-stock-dynamics" class="section level3">
 <h3>Section-2 Visualizing Stock Dynamics</h3>
 <p><strong>§ 2.1</strong> Around what year did Coca-Cola has its highest stock price in this time period? Around what year did Coca-Cola has its lowest stock price in this time period?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1982-02-01 有最高價格</span>
-<span class="co"># 1972-06-01 有最低價格</span>
-Cola<span class="op">$</span>Date[<span class="kw">max</span>(Cola<span class="op">$</span>StockPrice)]</code></pre></div>
-<pre><code>[1] 2/1/82
-480 Levels: 1/1/00 1/1/01 1/1/02 1/1/03 1/1/04 1/1/05 1/1/06 1/1/07 1/1/08 ... 9/1/99</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Cola<span class="op">$</span>Date[<span class="kw">min</span>(Cola<span class="op">$</span>StockPrice)]</code></pre></div>
-<pre><code>[1] 6/1/72
-480 Levels: 1/1/00 1/1/01 1/1/02 1/1/03 1/1/04 1/1/05 1/1/06 1/1/07 1/1/08 ... 9/1/99</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2009年有最高價格</span>
+<span class="co"># 1970年有最低價格</span>
+<span class="kw">max</span>(Cola<span class="op">$</span>StockPrice,<span class="kw">format</span>(Cola_time,<span class="st">&quot;%Y&quot;</span>))</code></pre></div>
+<pre><code>[1] &quot;2009&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">min</span>(Cola<span class="op">$</span>StockPrice,<span class="kw">format</span>(Cola_time,<span class="st">&quot;%Y&quot;</span>))</code></pre></div>
+<pre><code>[1] &quot;1970&quot;</code></pre>
 <p><strong>§ 2.2</strong> In March of 2000, the technology bubble burst, and a stock market crash occurred. According to this plot, which company’s stock dropped more?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#</span>
 <span class="kw">plot</span>(Cola<span class="op">$</span>Date, Cola<span class="op">$</span>StockPrice, <span class="dt">type=</span><span class="st">'l'</span>, <span class="dt">col=</span><span class="st">'blue'</span>, <span class="dt">lwd=</span><span class="dv">2</span>,<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">500</span>),<span class="dt">xlab=</span><span class="st">&quot;Date&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;stockprice&quot;</span>)
@@ -299,22 +297,18 @@ Cola<span class="op">$</span>Date[<span class="kw">max</span>(Cola<span class="o
 <div id="section-4-monthly-trends" class="section level3">
 <h3>Section-4 Monthly Trends</h3>
 <p><strong>§ 4.1</strong> For IBM, compare the monthly averages to the overall average stock price. In which months has IBM historically had a higher stock price (on average)? Select all that apply.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># February</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 01月到05月的股市行情比平均一整年好，可能是剛跨完年，大家心情比較激動，想多消費</span>
 <span class="kw">tapply</span>(IBM<span class="op">$</span>StockPrice, <span class="kw">format</span>(IBM_time,<span class="st">&quot;%m&quot;</span>), mean) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(IBM<span class="op">$</span>StockPrice)</code></pre></div>
 <pre><code>    01     02     03     04     05     06     07     08     09     10     11     12 
  5.863  8.319  8.058  7.742  7.127 -5.284 -5.308 -4.230 -5.287 -7.028 -6.356 -3.616 </code></pre>
 <p><strong>§ 4.2</strong> General Electric and Coca-Cola both have their highest average stock price in the same month. Which month is this?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># April</span>
-<span class="kw">tapply</span>(GE<span class="op">$</span>StockPrice,<span class="kw">format</span>(GE_time,<span class="st">&quot;%m&quot;</span>),mean) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(GE<span class="op">$</span>StockPrice)</code></pre></div>
-<pre><code>     01      02      03      04      05      06      07      08      09      10      11 
- 2.7416  3.2173  3.8470  5.1766  1.5678 -2.8351 -2.5700 -2.8004 -3.0644 -3.0645 -2.0147 
-     12 
--0.2013 </code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tapply</span>(Cola<span class="op">$</span>StockPrice,<span class="kw">format</span>(Cola_time,<span class="st">&quot;%m&quot;</span>),mean) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(Cola<span class="op">$</span>StockPrice)</code></pre></div>
-<pre><code>     01      02      03      04      05      06      07      08      09      10      11 
- 0.3388  0.7050  2.0416  2.6592  1.4139  0.7824 -1.0463 -1.1496 -2.4295 -2.0909 -0.9270 
-     12 
--0.2975 </code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># December</span>
+<span class="kw">tapply</span>(GE<span class="op">$</span>StockPrice,<span class="kw">format</span>(GE_time,<span class="st">&quot;%m&quot;</span>),mean)</code></pre></div>
+<pre><code>   01    02    03    04    05    06    07    08    09    10    11    12 
+62.05 62.52 63.15 64.48 60.87 56.47 56.73 56.50 56.24 56.24 57.29 59.10 </code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tapply</span>(Cola<span class="op">$</span>StockPrice,<span class="kw">format</span>(Cola_time,<span class="st">&quot;%m&quot;</span>),mean)</code></pre></div>
+<pre><code>   01    02    03    04    05    06    07    08    09    10    11    12 
+60.37 60.73 62.07 62.69 61.44 60.81 58.98 58.88 57.60 57.94 59.10 59.73 </code></pre>
 <p><strong>§ 4.3</strong> For the months of December and January, every company’s average stock is higher in one month and lower in the other. In which month are the stock prices lower?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># December</span></code></pre></div>
 <p><br><br><br></p>

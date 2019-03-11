@@ -73,8 +73,8 @@ class(hw1[,11])
 
 【1.2】How many variables are in this dataset?
 ```{r}
-# 2108051筆
-ncol(hw1)*nrow(hw1)
+# 11 個
+ncol(hw1)
 ```
 
 
@@ -96,6 +96,7 @@ min(hw1$Beat)
 ```{r}
 # 15536
 length(hw1$Arrest[hw1$Arrest==TRUE])
+
 ```
 
 【1.6】 How many observations have a LocationDescription value of ALLEY?
@@ -122,7 +123,7 @@ length(ALLEY[ALLEY==1])
 ```{r}
 # Correct
 head(hw1$Date)
-time = as.POSIXct(hw1$Date, format="%m/%d/%y %H:%M")
+time <- as.POSIXct(hw1$Date, format="%m/%d/%y %H:%M")
 ```
 
 ```{r}
@@ -146,19 +147,20 @@ median(time)
 
 【2.3】 In which month did the fewest motor vehicle thefts occur?
 ```{r}
-# 02 月
+# 02 月，也可以寫成format(time,"%m") %>% table() %>% sort()
 sort(table(format(time,"%m")))
+format(time,"%m") %>% table() %>% sort()
 ```
 
 【2.4】 On which weekday did the most motor vehicle thefts occur?
 ```{r}
-# 5
+# 星期五最常失竊。星期天最不常失竊，可能要休息
 sort(table(format(time,"%w")))
 ```
 
 【2.5】 Which month has the largest number of motor vehicle thefts for which an arrest was made?
 ```{r}
-# 01月
+# 01月偷車最容易被抓，或者也可能01月偷車數量較多，可能跨年警察有業績壓力。
 time[hw1$Arrest] %>% format('%m') %>% table() %>% sort()
 ```
 
@@ -178,18 +180,19 @@ hist(time,'year',las=2)
 ```{r}
 # FALSE多於TRUE，後半年犯罪率較高
 table(time > as.POSIXct("2007-01-01"))
+
 ```
 
 【3.3】 For what proportion of motor vehicle thefts in 2001 was an arrest made?
 ```{r}
-# 0.104
+# 0.104，警察辦事不周，感覺滿低的
 table(hw1$Arrest, format(time,'%Y')) %>% prop.table(2) %>% round(3)
 ```
 
 【3.4】 For what proportion of motor vehicle thefts in 2007 was an arrest made?
 ```{r}
 # 0.085
-tapply(hw1$Arrest, format(time,'%Y'), mean) %>% round(3)
+round(tapply(hw1$Arrest,format(time,"%Y"),mean),3)
 ```
 
 【3.5】 For what proportion of motor vehicle thefts in 2012 was an arrest made?
@@ -206,7 +209,7 @@ tapply(hw1$Arrest, format(time,'%Y'), mean) %>% round(3)
 【4.1】 Which locations are the top five locations for motor vehicle thefts, excluding the "Other" category? You should select 5 of the following options.
 
 ```{r}
-#
+# Street 最容易被偷，可能是街上車比較多
 tail(sort(table(hw1$LocationDescription)),6)
 ```
 
