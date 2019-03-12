@@ -1,0 +1,230 @@
+---
+title: "第三單元：(B)數位偵探"
+author: "第 0 組"
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    highlight: pygments
+    theme: flatly
+    css: style.css
+---
+
+```{r results='hide', message=FALSE, warning=FALSE, echo=F}
+# 這段程式碼設定網頁的格式，並安裝、載入一些基本的套件，請大家不要去改動<br>
+rm(list=ls(all=T))
+knitr::opts_chunk$set(comment = NA)
+knitr::opts_knit$set(global.par = TRUE)
+par(cex=0.8)
+options(scipen=20, digits=4, width=90)
+#
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(dplyr, d3heatmap)
+```
+<hr>
+
+犯罪是一個國際關注的問題，但它在不同的國家以不同的方式記錄和處理。 在美國，聯邦調查局（FBI）記錄了暴力犯罪和財產犯罪。 此外，每個城市都記錄了犯罪行為，一些城市發布了有關犯罪率的數據。 伊利諾伊州芝加哥市從2001年開始在線發布犯罪數據。
+
+芝加哥是美國人口第三多的城市，人口超過270萬。在這個作業裡面，我們將關注一種特定類型的財產犯罪，稱為「汽車盜竊」，我們將使用R中的一些基本數據分析來了解芝加哥的汽車盜竊紀錄。請載入文件"data/mvtWeek1.csv"：以下是各欄位的描述：
+
++ `ID`: a unique identifier for each observation
++ `Date`: the date the crime occurred
++ `LocationDescription`: the location where the crime occurred
++ `Arrest`: whether or not an arrest was made for the crime (TRUE if an arrest was made, and FALSE if an arrest was not made)
++ `Domestic`: whether or not the crime was a domestic crime, meaning that it was committed against a family member (TRUE if it was domestic, and FALSE if it was not domestic)
++ `Beat`: the area, or "beat" in which the crime occurred. This is the smallest regional division defined by the Chicago police department.
++ `District`: the police district in which the crime occured. Each district is composed of many beats, and are defined by the Chicago Police Department.
++ `CommunityArea`: the community area in which the crime occurred. Since the 1920s, Chicago has been divided into what are called "community areas", of which there are now 77. The community areas were devised in an attempt to create socially homogeneous regions.
++ `Year`: the year in which the crime occurred.
++ `Latitude`: the latitude of the location at which the crime occurred.
++ `Longitude`: the longitude of the location at which the crime occurred.
+
+<br>
+
+- - -
+
+###  Section-1 Loading the Data
+
+【1.1】How many rows of data (observations) are in this dataset?
+```{r}
+D = read.csv("data/mvtWeek1.csv", stringsAsFactors=F)
+nrow(D)
+ncol(D)
+```
+
+檢查各欄位的資料格式
+```{r}
+summary(D)
+```
+
+類別(Factor) versus 字串(Character)
+
+【1.2】How many variables are in this dataset?
+```{r}
+ncol(D)
+```
+
+
+【1.3】Using the "max" function, what is the maximum value of the variable "ID"?
+```{r}
+max(D$ID)
+```
+
+
+【1.4】 What is the minimum value of the variable "Beat"?
+```{r}
+min(D$Beat)
+```
+
+
+【1.5】 How many observations have value TRUE in the Arrest variable (this is the number of crimes for which an arrest was made)?
+```{r}
+sum(D$Arrest)
+mean(D$Arrest)
+```
+
+【1.6】 How many observations have a LocationDescription value of ALLEY?
+```{r}
+sum(D$LocationDescription == "ALLEY")
+```
+
+
+<br><br>
+
+- - -
+
+### Section-2 Understanding Dates in R
+
+【2.1】 In what format are the entries in the variable Date?
+
++ Month/Day/Year Hour:Minute
++ Day/Month/Year Hour:Minute
++ Hour:Minute Month/Day/Year
++ Hour:Minute Day/Month/Year
+
+```{r}
+head(D$Date)  # Month/Day/Year Hour:Minute
+```
+
+```{r}
+ts = as.POSIXct(D$Date, format="%m/%d/%y %H:%M")
+par(cex=0.7)
+hist(ts,"year",las=2,freq=T,xlab="")
+```
+
+```{r}
+table(format(ts,'%u'))
+table(format(ts,'%m'))
+table(weekday=format(ts,'%u'), month=format(ts,'%m'))
+```
+
+```{r fig.height=2.5, fig.width=8}
+table(format(ts,"%u"), format(ts,"%H")) %>% 
+  as.data.frame.matrix %>% 
+  d3heatmap(F,F,col=colorRamp(c('seagreen','lightyellow','red')))
+```
+
+
+【2.2】 What is the month and year of the median date in our dataset? 
+```{r}
+median(ts)
+```
+
+【2.3】 In which month did the fewest motor vehicle thefts occur?
+```{r}
+sort(table(format(ts,"%m")))
+```
+
+【2.4】 On which weekday did the most motor vehicle thefts occur?
+```{r}
+format(ts,"%w") %>% table %>% sort
+```
+
+【2.5】 Which month has the largest number of motor vehicle thefts for which an arrest was made?
+```{r}
+ts[D$Arrest] %>% format('%m') %>% table %>% sort
+```
+
+<br><br>
+
+- - -
+
+### Section-3 Visualizing Crime Trends
+
+【3.1】 (a) In general, does it look like crime increases or decreases from 2002 - 2012? (b) In general, does it look like crime increases or decreases from 2005 - 2008? (c) In general, does it look like crime increases or decreases from 2009 - 2011?
+```{r}
+hist(ts,'year',las=2)
+# 2002~2012 : decrease
+# 2005~2008 : decrease
+# 2009~2011 : increase
+```
+
+【3.2】 Does it look like there were more crimes for which arrests were made in the first half of the time period or the second half of the time period?
+```{r}
+table(ts > as.POSIXct("2007-01-01"))
+```
+
+【3.3】 For what proportion of motor vehicle thefts in 2001 was an arrest made?
+```{r}
+table(D$Arrest, format(ts,'%Y')) %>% prop.table(2) %>% round(3) # 0.104
+```
+
+【3.4】 For what proportion of motor vehicle thefts in 2007 was an arrest made?
+```{r}
+tapply(D$Arrest, format(ts,'%Y'), mean) %>% round(3) # 0.085
+```
+
+【3.5】 For what proportion of motor vehicle thefts in 2012 was an arrest made?
+```{r}
+# 0.039
+```
+<br>
+
+<span style="font-size:24px">`r "\U1F5FF"`</span>:
+汽車竊案有季節性嗎? 哪一個季節有比較多(少)的竊案呢？
+```{r}
+#
+#
+```
+
+<br><br><hr>
+
+
+### Section-4 Popular Locations
+
+【4.1】 Which locations are the top five locations for motor vehicle thefts, excluding the "Other" category? You should select 5 of the following options.
+
+```{r}
+table(D$LocationDescription) %>% sort %>% tail(6)
+```
+
+【4.2】 How many observations are in Top5?
+
+<span style="font-size:24px">`r "\U1F4A1"`</span>:
+除了向量本身的名字之外，每一個向量元件也可以有名字
+```{r}
+(top5 = names(table(D$LocationDescription) %>% sort %>% tail(6))[-4])
+
+sum(D$LocationDescription %in% top5)  # 177510
+```
+
+【4.3】 One of the locations has a much higher arrest rate than the other locations. Which is it? 
+```{r}
+TOP5 = subset(D, LocationDescription %in% top5)
+tapply(TOP5$Arrest, TOP5$LocationDescription, mean) %>% sort
+```
+
+【4.4】 On which day of the week do the most motor vehicle thefts at gas stations happen?
+```{r}
+ts[D$Location == "GAS STATION"] %>% format('%w') %>% table %>% sort
+```
+
+【4.5】 On which day of the week do the fewest motor vehicle thefts in residential driveways happen?
+```{r}
+ts[D$Location == "DRIVEWAY - RESIDENTIAL"] %>% 
+  format('%w') %>% table %>% sort
+```
+
+<br><br>
+
+
+

@@ -1,0 +1,218 @@
+---
+title: "AS3-2: 股市動態"
+author: "第16組"
+date: "`r Sys.time()`"
+output:
+  html_document:
+    highlight: pygments
+    theme: flatly
+    css: style.css
+---
+
+```{r results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+# 這些程式碼設定網頁的格式，並安裝、載入一些基本的套件，請大家不要去改動<br>
+rm(list=ls(all=T))
+knitr::opts_chunk$set(comment = NA)
+knitr::opts_knit$set(global.par = TRUE)
+par(cex=0.8)
+options(scipen=20, digits=4, width=90)
+#
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(dplyr)
+```
+<hr>
+
+**股票動態**
+
+股票市場是買賣雙方交易公司股票的地方，也是個人和公司投資的最受歡迎的方式之一。現在估計世界股票市場規模達到數兆。紐約證券交易所位於紐約市，是世界上最大的股票市場。 紐約證券交易所約有2,800家上市公司。在這個問題上，我們將看看其中五家公司的每月股價：IB、通用電氣（GE）、寶潔、可口可樂和波音。此問題中使用的數據來自Infochimps。
+
+使用`read.csv()`下載並讀取以下文件：
+
++ `data/IBMStock.csv`
++ `data/GEStock.csv`
++ `data/ProcterGambleStock.csv`
++ `data/CocaColaStock.csv`
++ `data/BoeingStock.csv` 
+
+分別存入資料框`IBM`、`GE`、`ProcterGamble`、`CocaCola`和`Boeing`，
+每個資料框都有兩個變量，描述如下：
+
++ `Date`：日期
++ `StockPrice`：給定月份公司的平均股價
+
+在這個案例，我們將看看這些公司的股票動態如何隨著時間的推移而發生變化。
+
+<br><hr>
+
+###  Section-1 Summary Statistics
+
+__§ 1.1__ Our five datasets all have the same number of observations. How many observations are there in each data set?
+```{r}
+# 每份資料都有480筆觀察值
+setwd("~/Desktop/unit03/data")
+IBM <- read.csv("IBMStock.csv")
+GE<- read.csv("GEStock.csv")
+Procter <- read.csv("ProcterGambleStock.csv")
+Cola <- read.csv("CocaColaStock.csv")
+Boeing  <- read.csv("BoeingStock.csv")
+nrow(IBM)
+```
+
+
+__§ 1.2__ What is the earliest year in our datasets?
+```{r}
+# 五家公司最早資料皆為1970-01-01
+Boeing_time = as.Date(Boeing$Date,"%m/%d/%y")
+Cola_time = as.Date(Cola$Date,"%m/%d/%y")
+GE_time = as.Date(GE$Date,"%m/%d/%y")
+IBM_time = as.Date(IBM$Date,"%m/%d/%y")
+Procter_time = as.Date(Procter$Date,"%m/%d/%y")
+summary(Boeing_time)
+summary(Cola_time)
+summary(GE_time)
+summary(IBM_time)
+summary(Procter_time)
+```
+
+__§ 1.3__ What is the latest year in our datasets?
+```{r}
+# 2009-12-01
+```
+
+__§ 1.4__ What is the mean stock price of IBM over this time period?
+```{r}
+# 144.375
+mean(IBM$StockPrice)
+```
+
+__§ 1.5__ What is the minimum stock price of General Electric (GE) over this time period?
+```{r}
+# 9.294
+min(GE$StockPrice)
+```
+
+__§ 1.6__ What is the maximum stock price of Coca-Cola over this time period?
+```{r}
+# 146.6
+max(Cola$StockPrice)
+```
+
+__§ 1.7__ What is the median stock price of Boeing over this time period?
+```{r}
+# 44.88
+median(Boeing$StockPrice)
+```
+
+__§ 1.8__ What is the standard deviation of the stock price of Procter & Gamble over this time period?
+```{r}
+# 18.19
+sd(Procter$StockPrice)
+```
+
+<br><hr>
+
+###  Section-2 Visualizing Stock Dynamics
+
+__§ 2.1__ Around what year did Coca-Cola has its highest stock price in this time period? Around what year did Coca-Cola has its lowest stock price in this time period?
+```{r}
+# 2009年有最高價格
+# 1970年有最低價格
+max(Cola$StockPrice,format(Cola_time,"%Y"))
+min(Cola$StockPrice,format(Cola_time,"%Y"))
+
+```
+
+
+__§ 2.2__ In March of 2000, the technology bubble burst, and a stock market crash occurred. According to this plot, which company's stock dropped more?
+```{r}
+#
+plot(Cola$Date, Cola$StockPrice, type='l', col='blue', lwd=2,ylim=c(0,500),xlab="Date",ylab="stockprice")
+lines(Procter$Date, Procter$StockPrice, col="green", lwd=2)
+lines(IBM$Date, IBM$StockPrice, col="red")
+lines(GE$Date,  GE$StockPrice,  col="purple")
+lines(Boeing$Date,  Boeing$StockPrice,  col="black")
+abline(v = as.Date("2000-03-01"), lty=3, col='orange')
+abline(v = as.Date("1983-07-01"), lty=3, col='orange')
+legend("topright",legend=c("Coke","P&G","IBM","GE","Boeing"),
+       col=c('blue','green',"red","purple","black"),lwd=2)
+
+```
+
+__§ 2.3__ (a) Around 1983, the stock for one of these companies (Coca-Cola or Procter and Gamble) was going up, while the other was going down. Which one was going up? 
+```{r}
+# 
+plot(Cola$Date, Cola$StockPrice, type='l', col='blue', lwd=2,xlab="Date",ylab="stockprice")
+lines(Procter$Date, Procter$StockPrice, col="green", lwd=2)
+abline(v = as.Date("2000-03-01"), lty=3, col='orange')
+abline(v = as.Date("1983-07-01"), lty=3, col='orange')
+legend("topright",legend=c("Coke","P&G"),
+       col=c('blue','green'),lwd=2)
+```
+
+(b) In the time period shown in the plot, which stock generally has lower values?
+```{r}
+# Cola
+```
+
+
+<br><hr>
+
+###  Section-3 Visualizing Stock Dynamics 1995-2005
+
+__§ 3.1__ Which stock fell the most right after the technology bubble burst in March 2000?
+```{r}
+# 
+plot(Cola$Date[301:432], Cola$StockPrice[301:432], type='l', col='blue', lwd=2, ylim=c(0,210),xlab="Date",ylab="stockprice")
+lines(Procter$Date[301:432], Procter$StockPrice[301:432], col="green", lwd=2)
+lines(IBM$Date[301:432], IBM$StockPrice[301:432], col="red")
+lines(GE$Date[301:432],  GE$StockPrice[301:432],  col="purple")
+lines(Boeing$Date[301:432],  Boeing$StockPrice[301:432],  col="black")
+abline(v = as.Date("2000-03-01"), lty=3, col='orange')
+abline(v = as.Date("1997-09-01"), lty=3, col='gray')
+abline(v = as.Date("1997-11-01"), lty=3, col='gray')
+legend("topright",legend=c("Cola","P&G","IBM","GE","Boeing"),
+       col=c('blue','green',"red","purple","black"),lwd=2)
+```
+
+__§ 3.2__ Which stock reaches the highest value in the time period 1995-2005?
+```{r}
+# IBM
+
+```
+
+__§ 3.3__ In October of 1997, there was a global stock market crash that was caused by an economic crisis in Asia. Comparing September 1997 to November 1997, which companies saw a decreasing trend in their stock price? (Select all that apply.)
+```{r}
+# Boeing and PG
+```
+
+__§ 3.4__ In the last two years of this time period (2004 and 2005) which stock seems to be performing the best, in terms of increasing stock price?
+```{r}
+# Boeing
+```
+
+
+<br><hr>
+
+
+###  Section-4 Monthly Trends
+
+__§ 4.1__ For IBM, compare the monthly averages to the overall average stock price. In which months has IBM historically had a higher stock price (on average)? Select all that apply.
+```{r}
+# 01月到05月的股市行情比平均一整年好，可能是剛跨完年，大家心情比較激動，想多消費
+tapply(IBM$StockPrice, format(IBM_time,"%m"), mean) - mean(IBM$StockPrice)
+```
+
+__§ 4.2__ General Electric and Coca-Cola both have their highest average stock price in the same month. Which month is this?
+```{r}
+# December
+tapply(GE$StockPrice,format(GE_time,"%m"),mean)
+tapply(Cola$StockPrice,format(Cola_time,"%m"),mean)
+```
+
+__§ 4.3__ For the months of December and January, every company's average stock is higher in one month and lower in the other. In which month are the stock prices lower?
+```{r}
+# December
+```
+
+<br><br><br>
+
