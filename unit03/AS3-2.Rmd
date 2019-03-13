@@ -114,10 +114,10 @@ sd(Procter$StockPrice)
 
 __§ 2.1__ Around what year did Coca-Cola has its highest stock price in this time period? Around what year did Coca-Cola has its lowest stock price in this time period?
 ```{r}
-# 2009年有最高價格
-# 1970年有最低價格
-max(Cola$StockPrice,format(Cola$Date,"%Y"))
-min(Cola$StockPrice,format(Cola$Date,"%Y"))
+# 1973年有最高價格
+# 1980年有最低價格
+Cola$Date[which.max(Cola$StockPrice)]%>%format("%Y")
+Cola$Date[which.min(Cola$StockPrice)]%>%format("%Y")
 
 ```
 

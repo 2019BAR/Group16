@@ -235,7 +235,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">AS3-2: 股市動態</h1>
 <h4 class="author"><em>第16組</em></h4>
-<h4 class="date"><em>2019-03-13 19:28:13</em></h4>
+<h4 class="date"><em>2019-03-13 19:43:01</em></h4>
 
 </div>
 
@@ -320,12 +320,12 @@ Procter<span class="op">$</span>Date =<span class="st"> </span><span class="kw">
 <div id="section-2-visualizing-stock-dynamics" class="section level3">
 <h3>Section-2 Visualizing Stock Dynamics</h3>
 <p><strong>§ 2.1</strong> Around what year did Coca-Cola has its highest stock price in this time period? Around what year did Coca-Cola has its lowest stock price in this time period?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2009年有最高價格</span>
-<span class="co"># 1970年有最低價格</span>
-<span class="kw">max</span>(Cola<span class="op">$</span>StockPrice,<span class="kw">format</span>(Cola<span class="op">$</span>Date,<span class="st">&quot;%Y&quot;</span>))</code></pre></div>
-<pre><code>[1] &quot;2009&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">min</span>(Cola<span class="op">$</span>StockPrice,<span class="kw">format</span>(Cola<span class="op">$</span>Date,<span class="st">&quot;%Y&quot;</span>))</code></pre></div>
-<pre><code>[1] &quot;1970&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1973年有最高價格</span>
+<span class="co"># 1980年有最低價格</span>
+Cola<span class="op">$</span>Date[<span class="kw">which.max</span>(Cola<span class="op">$</span>StockPrice)]<span class="op">%&gt;%</span><span class="kw">format</span>(<span class="st">&quot;%Y&quot;</span>)</code></pre></div>
+<pre><code>[1] &quot;1973&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Cola<span class="op">$</span>Date[<span class="kw">which.min</span>(Cola<span class="op">$</span>StockPrice)]<span class="op">%&gt;%</span><span class="kw">format</span>(<span class="st">&quot;%Y&quot;</span>)</code></pre></div>
+<pre><code>[1] &quot;1980&quot;</code></pre>
 <p><strong>§ 2.2</strong> In March of 2000, the technology bubble burst, and a stock market crash occurred. According to this plot, which company’s stock dropped more?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#</span>
 <span class="kw">plot</span>(Cola<span class="op">$</span>Date, Cola<span class="op">$</span>StockPrice, <span class="dt">type=</span><span class="st">'l'</span>, <span class="dt">col=</span><span class="st">'blue'</span>, <span class="dt">lwd=</span><span class="dv">2</span>,<span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">500</span>),<span class="dt">xlab=</span><span class="st">&quot;Date&quot;</span>,<span class="dt">ylab=</span><span class="st">&quot;stockprice&quot;</span>)
