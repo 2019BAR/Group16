@@ -24,7 +24,7 @@
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
@@ -60,7 +60,29 @@ code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
 code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
 code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -124,6 +146,9 @@ img {
 button.code-folding-btn:focus {
   outline: none;
 }
+summary {
+  display: list-item;
+}
 </style>
 
 
@@ -131,14 +156,74 @@ button.code-folding-btn:focus {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
 </script>
 
 <!-- code folding -->
-
 
 
 
@@ -150,7 +235,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">AS3-3: 美國的人口統計和就業資料</h1>
 <h4 class="author"><em>第16組</em></h4>
-<h4 class="date"><em>2019-03-11 23:24:53</em></h4>
+<h4 class="date"><em>2019-03-13 19:32:18</em></h4>
 
 </div>
 
@@ -179,8 +264,7 @@ $(document).ready(function () {
 <h3>Section-1 Loading and Summarizing the Dataset</h3>
 <p><strong>§ 1.1</strong> How many interviewees are in the dataset?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 131302位</span>
-<span class="kw">setwd</span>(<span class="st">&quot;~/Desktop/unit03/data&quot;</span>)
-CPS&lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;CPSData.csv&quot;</span>)
+CPS&lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;data/CPSData.csv&quot;</span>)
 <span class="kw">nrow</span>(CPS)</code></pre></div>
 <pre><code>[1] 131302</code></pre>
 <p><strong>§ 1.2</strong> Among the interviewees with a value reported for the Industry variable, what is the most common industry of employment? Please enter the name exactly how you see it.</p>
@@ -384,14 +468,12 @@ $Citizenship
 <h3>Section-3 Integrating Metropolitan Area Data</h3>
 <p><strong>§ 3.1</strong> How many observations (codes for metropolitan areas) are there in MetroAreaMap?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 271筆</span>
-<span class="kw">setwd</span>(<span class="st">&quot;~/Desktop/unit03/data&quot;</span>)
-MAC &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;MetroAreaCodes.csv&quot;</span>)
+MAC &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;data/MetroAreaCodes.csv&quot;</span>)
 <span class="kw">nrow</span>(MAC)</code></pre></div>
 <pre><code>[1] 271</code></pre>
 <p>How many observations (codes for countries) are there in CountryMap?</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 149筆</span>
-<span class="kw">setwd</span>(<span class="st">&quot;~/Desktop/unit03/data&quot;</span>)
-CC &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;CountryCodes.csv&quot;</span>)
+CC &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;data/CountryCodes.csv&quot;</span>)
 <span class="kw">nrow</span>(CC)</code></pre></div>
 <pre><code>[1] 149</code></pre>
 <p><strong>§ 3.2</strong> What is the name of the variable that was added to the data frame by the merge() operation?</p>
