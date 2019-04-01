@@ -49,12 +49,11 @@ pacman::p_load(dplyr)
 __§ 1.1__ Our five datasets all have the same number of observations. How many observations are there in each data set?
 ```{r}
 # 每份資料都有480筆觀察值
-setwd("~/Desktop/unit03/data")
-IBM <- read.csv("IBMStock.csv")
-GE<- read.csv("GEStock.csv")
-Procter <- read.csv("ProcterGambleStock.csv")
-Cola <- read.csv("CocaColaStock.csv")
-Boeing  <- read.csv("BoeingStock.csv")
+IBM <- read.csv("data/IBMStock.csv")
+GE<- read.csv("data/GEStock.csv")
+Procter <- read.csv("data/ProcterGambleStock.csv")
+Cola <- read.csv("data/CocaColaStock.csv")
+Boeing  <- read.csv("data/BoeingStock.csv")
 nrow(IBM)
 ```
 
@@ -62,16 +61,16 @@ nrow(IBM)
 __§ 1.2__ What is the earliest year in our datasets?
 ```{r}
 # 五家公司最早資料皆為1970-01-01
-Boeing_time = as.Date(Boeing$Date,"%m/%d/%y")
-Cola_time = as.Date(Cola$Date,"%m/%d/%y")
-GE_time = as.Date(GE$Date,"%m/%d/%y")
-IBM_time = as.Date(IBM$Date,"%m/%d/%y")
-Procter_time = as.Date(Procter$Date,"%m/%d/%y")
-summary(Boeing_time)
-summary(Cola_time)
-summary(GE_time)
-summary(IBM_time)
-summary(Procter_time)
+Boeing$Date = as.Date(Boeing$Date,"%m/%d/%y")
+Cola$Date = as.Date(Cola$Date,"%m/%d/%y")
+GE$Date = as.Date(GE$Date,"%m/%d/%y")
+IBM$Date = as.Date(IBM$Date,"%m/%d/%y")
+Procter$Date = as.Date(Procter$Date,"%m/%d/%y")
+summary(Boeing$Date)
+summary(Cola$Date)
+summary(GE$Date)
+summary(IBM$Date)
+summary(Procter$Date)
 ```
 
 __§ 1.3__ What is the latest year in our datasets?
@@ -115,10 +114,10 @@ sd(Procter$StockPrice)
 
 __§ 2.1__ Around what year did Coca-Cola has its highest stock price in this time period? Around what year did Coca-Cola has its lowest stock price in this time period?
 ```{r}
-# 2009年有最高價格
-# 1970年有最低價格
-max(Cola$StockPrice,format(Cola_time,"%Y"))
-min(Cola$StockPrice,format(Cola_time,"%Y"))
+# 1973年有最高價格
+# 1980年有最低價格
+Cola$Date[which.max(Cola$StockPrice)]%>%format("%Y")
+Cola$Date[which.min(Cola$StockPrice)]%>%format("%Y")
 
 ```
 
@@ -199,14 +198,14 @@ __§ 3.4__ In the last two years of this time period (2004 and 2005) which stock
 __§ 4.1__ For IBM, compare the monthly averages to the overall average stock price. In which months has IBM historically had a higher stock price (on average)? Select all that apply.
 ```{r}
 # 01月到05月的股市行情比平均一整年好，可能是剛跨完年，大家心情比較激動，想多消費
-tapply(IBM$StockPrice, format(IBM_time,"%m"), mean) - mean(IBM$StockPrice)
+tapply(IBM$StockPrice, format(IBM$Date,"%m"), mean) - mean(IBM$StockPrice)
 ```
 
 __§ 4.2__ General Electric and Coca-Cola both have their highest average stock price in the same month. Which month is this?
 ```{r}
 # December
-tapply(GE$StockPrice,format(GE_time,"%m"),mean)
-tapply(Cola$StockPrice,format(Cola_time,"%m"),mean)
+tapply(GE$StockPrice,format(GE$Date,"%m"),mean)
+tapply(Cola$StockPrice,format(Cola$Date,"%m"),mean)
 ```
 
 __§ 4.3__ For the months of December and January, every company's average stock is higher in one month and lower in the other. In which month are the stock prices lower?

@@ -48,8 +48,7 @@ pacman::p_load(dplyr)
 __§ 1.1__ How many interviewees are in the dataset?
 ```{r}
 # 131302位
-setwd("~/Desktop/unit03/data")
-CPS<- read.csv("CPSData.csv")
+CPS<- read.csv("data/CPSData.csv")
 nrow(CPS)
 ```
 
@@ -173,16 +172,14 @@ tail(sort(tapply(is.na(CPS$MetroAreaCode), CPS$State, mean)))
 __§ 3.1__ How many observations (codes for metropolitan areas) are there in MetroAreaMap?
 ```{r}
 # 271筆
-setwd("~/Desktop/unit03/data")
-MAC <- read.csv("MetroAreaCodes.csv")
+MAC <- read.csv("data/MetroAreaCodes.csv")
 nrow(MAC)
 ```
 
 How many observations (codes for countries) are there in CountryMap?
 ```{r}
 # 149筆
-setwd("~/Desktop/unit03/data")
-CC <- read.csv("CountryCodes.csv")
+CC <- read.csv("data/CountryCodes.csv")
 nrow(CC)
 ```
 

@@ -47,8 +47,7 @@ pacman::p_load(dplyr, d3heatmap)
 【1.1】How many rows of data (observations) are in this dataset?
 ```{r}
 # 191641 列
-setwd("~/Desktop/unit03/data")
-hw1 <- read.csv("mvtWeek1.csv")
+hw1 <- read.csv("data/mvtWeek1.csv")
 nrow(hw1)
 ```
 
