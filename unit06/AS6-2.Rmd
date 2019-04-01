@@ -38,7 +38,7 @@ steps = stepfun(bx-adj, c(0, sapply(bx, function(b) mean(D <= b))))
 plot(steps, cex=0, col='#33CC337F', lwd=3, lty=1, add=T)
 
 # Smooth PDF
-Adjust = 0.5    # bandwidth adjustment
+Adjust = 1    # bandwidth adjustment
 DEN = density(D, adjust = Adjust)
 lines(DEN, col='gold', lwd=3)
 # Smooth CDF
@@ -144,9 +144,12 @@ curve(dnorm(x,mean=200,sd=sqrt(160)), col='red', lwd=2, add=T)
 &emsp; 此九個時間點分別往後賭10秒<br>
 ```{r}
 D = faithful$eruptions
+DEN = density(D, adjust = 0.5)
+PDF = approxfun(DEN$x, DEN$y, yleft=0, yright=0) 
 x=seq(1,6,1/6)
 Y=function(x){prob= integrate(PDF, x, (x+1/6))$value
 95*prob+(-5)*(1-prob)}
+
 exp=sapply(x,Y)
 a=data.frame(x,exp)
 a[a$exp>0,]
