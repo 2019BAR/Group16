@@ -17,8 +17,8 @@ library(dplyr)
 ```{r}
 
 # Frame
-plot(0,0,xlim=c(40,100),ylim=c(0,1.1),xlab="噴發時間(分鐘)", 
-     ylab="密度 or (累計)機率", main="分布、機率與密度",family="Arial Unicode MS")
+plot(0,0,xlim=c(40,100),ylim=c(0,1.1),xlab="Time(minutes)", 
+     ylab="Density or CDF", main="Distribution,Probability and Density")
 abline(h=1, col='lightgray', lwd=0.25, lty=2)
 
 # Empirical PDF
@@ -142,13 +142,15 @@ curve(dnorm(x,mean=200,sd=sqrt(160)), col='red', lwd=2, add=T)
 &emsp; ■ 你要怎麼押注，才能獲得最高的期望值呢？<br>
 &emsp; ##1.666667、1.833333 、2.000000、3.833333、4.000000、4.166667、4.333333、4.500000、4.666667
 &emsp; 此九個時間點分別往後賭10秒<br>
-&emsp; ##D = faithful$eruptions
-&emsp; x=seq(1,6,1/6)
-&emsp; Y=function(x){prob= integrate(PDF, x, (x+1/6))$value
-&emsp; 95*prob+(-5)*(1-prob)}
-&emsp; exp=sapply(x,Y)
-&emsp; a=data.frame(x,exp)
-&emsp; a[a$exp>0,]。<br>
+```{r}
+D = faithful$eruptions
+x=seq(1,6,1/6)
+Y=function(x){prob= integrate(PDF, x, (x+1/6))$value
+95*prob+(-5)*(1-prob)}
+exp=sapply(x,Y)
+a=data.frame(x,exp)
+a[a$exp>0,]
+```
 
 &emsp; ■ 你的賭金和期望值各是多少？<br>
 &emsp; ##賭金為45元，期望值為：24.33797<br>
