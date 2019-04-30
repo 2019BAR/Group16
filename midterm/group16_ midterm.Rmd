@@ -1,0 +1,259 @@
+---
+title: "Mid-term Group Project"
+author: "中山大學管理學院 Group 16"
+date: "2019/4/25"
+output: html_document
+---
+```{r results='hide', message=FALSE, warning=FALSE, echo=F}
+rm(list=ls(all=T))
+knitr::opts_chunk$set(comment = NA)
+knitr::opts_knit$set(global.par = TRUE)
+par(cex=0.8)
+options(scipen=20, digits=5, width=80)
+if(!require(pacman)) install.packages("pacman")
+```
+基本設定
+
+```{r}
+library(readr)
+olist_orders_dataset <- read_csv("olist_orders_dataset.csv")
+olist_order_items_dataset <- read_csv("olist_order_items_dataset.csv")
+```
+讀取資料
+
+```{r}
+olist_order <- merge(x = olist_orders_dataset, y = olist_order_items_dataset, by = "order_id")
+olist_order
+```
+依order_id來合併資料
+
+```{r}
+library(dplyr)
+```
+使用dplyr套件
+
+```{r}
+setwd("/Users/yao/Desktop/")
+getwd()
+```
+設定路徑、卻哢敬
+
+```{r}
+purchase_to_approved <- difftime(olist_order$order_approved_at, olist_order$order_purchase_timestamp, tz, units = "hour")
+```
+將格式資料時間化
+
+```{r}
+approved_to_carrier <- difftime(olist_order$order_delivered_carrier_date, olist_order$order_approved_at, tz, units = "hour")
+```
+將格式資料時間化
+
+```{r}
+carrier_to_customer <- difftime(olist_order$order_delivered_customer_date, olist_order$order_delivered_carrier_date, tz, units = "hour")
+```
+將格式資料時間化
+
+```{r}
+purchase_to_customer <- difftime(olist_order$order_delivered_customer_date, olist_order$order_purchase_timestamp, tz, units = "hour")
+```
+將格式資料時間化
+
+```{r}
+purchase_to_estimated <- difftime(olist_order$order_estimated_delivery_date, olist_order$order_purchase_timestamp, tz, units = "hour")
+```
+計算時間落差
+
+```{r}
+order_id <- olist_order$order_id
+customer_id <- olist_order$customer_id
+order_status <- olist_order$order_status
+
+estimated_delivered_diff <- difftime(olist_order$order_estimated_delivery_date, olist_order$order_delivered_customer_date, tz, units = "hour")
+
+limit_carrier_diff <- difftime(olist_order$shipping_limit_date, olist_order$order_delivered_carrier_date, tz, units = "hour")
+
+approved_to_shipping_limit <- difftime(olist_order$shipping_limit_date, olist_order$order_approved_at, tz, units = "hour")
+```
+合併資料並計算落差
+
+```{r}
+time_diff <- arrange(data.frame(order_id, customer_id, order_status, purchase_to_approved, approved_to_carrier, approved_to_shipping_limit, limit_carrier_diff, carrier_to_customer, purchase_to_customer, purchase_to_estimated, estimated_delivered_diff),order_id)
+time_diff
+```
+增加新欄位
+
+```{r}
+write.csv(time_diff, "time_diff.csv")
+```
+寫出合併檔案
+
+```{r}
+time_diff = read.csv("time_diff.csv")
+time_diff
+```
+讀取上個步驟的合併檔案
+
+```{r}
+aggregate(order_item_id~customer_id+order_status+purchase_to_approved+approved_to_carrier+approved_to_shipping_limit+limit_carrier_diff+carrier_to_customer+purchase_to_customer+purchase_to_estimated+estimated_delivered_diff+product_id+seller_id+price+freight_value, time_diff, sum)
+```
+```{r}
+write.csv(time_diff, "time_diff_order_item.csv")
+```
+寫出合併檔案
+
+```{r}
+tmp=0
+for(i in 1:100957){
+if(project[i,1]=="1205480caca6c37f55954da838933b8a")tmp[i]="A"
+else if(project[i,1]=="e898b5ef24833b9cb9e2d4f00b937595")tmp[i]="B"
+else if(project[i,1]=="0d861a5e4dd6a9079d89e1330848f0ab")tmp[i]="C"
+else if(project[i,1]=="1abf283d0aba52db4f323567c763714b")tmp[i]="D"
+else if(project[i,1]=="637321037fb8b34323ce7fd8aab4a0f1")tmp[i]="E"
+else if(project[i,1]=="f73d378096054953caa2d69a8abceb73")tmp[i]="F"
+else tmp[i]="Other"
+}
+project[,1]=factor(tmp)
+
+pro=0
+for(i in 1:100957){
+if(project[i,11]=="99a4788cb24856965c36a24e339b6058")pro[i]="A"
+else if(project[i,11]=="aca2eb7d00ea1a7b8ebd4e68314663af")pro[i]="B"
+else if(project[i,11]=="422879e10f46682990de24d770e7f83d")pro[i]="C"
+else if(project[i,11]=="d1c427060a0f73f6b889a5c7c61f2ac4")pro[i]="D"
+else if(project[i,11]=="389d119b48cf3043d311335e499d9c6b")pro[i]="E"
+else if(project[i,11]=="53b36df67ebb7c41585e8d54d6772e08")pro[i]="F"
+else pro[i]="Other"
+}
+project[,11]=factor(pro)
+
+sel=0
+for(i in 1:100957){
+if(project[i,12]=="99a4788cb24856965c36a24e339b6058")sel[i]="A"
+else if(project[i,12]=="aca2eb7d00ea1a7b8ebd4e68314663af")sel[i]="B"
+else if(project[i,12]=="422879e10f46682990de24d770e7f83d")sel[i]="C"
+else if(project[i,12]=="d1c427060a0f73f6b889a5c7c61f2ac4")sel[i]="D"
+else if(project[i,12]=="389d119b48cf3043d311335e499d9c6b")sel[i]="E"
+else if(project[i,12]=="53b36df67ebb7c41585e8d54d6772e08")sel[i]="F"
+else sel[i]="Other"
+}
+project[,12]=factor(sel)
+write.csv(project,"Group.csv")
+
+```
+利用迴圈將第1、11、12欄的id依照summary結果來整理。
+
+
+```{r}
+library('lavaan')
+model <- 'Customer = ~ purchase_to_approved + purchase_to_customer
+              Producer = ~ approved_to_carrier + carrier_to_customer 
+              Logistics = ~ approved_to_shipping_limit + limit_carrier_diff '
+Customer ~ Logistic + Producer
+Producer ~ Customer + Logistic
+Logistic ~ Producer
+result <- sem(model,data=project)
+summary(result,standardized=TRUE)
+```
+利用CPM方法檢測模型效果。
+
+
+```{r}
+x1=project$purchase_to_approved
+hist(x1,col='blue')
+x2=project$approved_to_carrier
+hist(x2,col='blue')
+x3=project$approved_to_shipping_limit
+hist(x3,col='blue')
+x4=project$limit_carrier_diff
+hist(x4,col='blue')
+x5=project$carrier_to_customer
+hist(x5,col='blue')
+x6=project$purchase_to_customer
+hist(x6,col='blue')
+x7=project$purchase_to_estimated
+hist(x7,col='blue')
+x8=project$estimated_delivered_diff
+hist(x8,col='blue')
+price=project$price
+hist(price,col='blue')
+fee=project$freight_value
+hist(fee,col='blue')
+
+```
+利用histogrom 畫出每個時間點差距的直方圖分配狀態。
+
+```{r}
+library('ggplot2')
+library('lattice')
+ggplot(project,aes(x=purchase_to_estimated,y=estimated_delivered_diff))+geom_point()
+ggplot(project,aes(x=purchase_to_customer,y=purchase_to_estimated))+geom_point()
+ggplot(project,aes(x=purchase_to_approved,y=purchase_to_customer))+geom_point()
+ggplot(project,aes(x=approved_to_carrier,y=carrier_to_customer))+geom_point()
+```
+圖（一）：呈現正相關。
+圖（二）：無相關性，具有高線性重合。
+圖（三）：無相關性。
+圖（四）：斜率無限大，無相關性。
+
+
+```{r}
+time<-cbind(x1,x2,x3,x4,x5,x6,x7,x8)
+summary(time)
+avg_x1<-10.28
+avg_x2<-43.3
+avg_x3<-147.1
+avg_x4<-80.38
+avg_x5<-221.94
+avg_x6<-299
+avg_x7<-571.25
+avg_x8<-272.3
+```
+計算每個時間點落差的平均值，並將之儲存在x1:x8
+
+
+```{r}
+nortest::lillie.test(x1)
+nortest::lillie.test(x2)
+nortest::lillie.test(x3)
+nortest::lillie.test(x4)
+nortest::lillie.test(x5)
+nortest::lillie.test(x6)
+nortest::lillie.test(x7)
+nortest::lillie.test(x8)
+```
+對x1:x8進行常態性檢定，確定每項變數分布狀況皆為常態分配。
+
+
+```{r}
+library("igraph")
+line<-c("order(average:10.28)","shipping(target:147.1/real:80.38)","shipping(target:147.1/real:80.38)","logistic(average:221.94)","logistic(average:221.94)","purchase(target:571.25/real:272.3)")
+gd<-graph(line)
+plot(gd,layout=layout.fruchterman.reingold)
+
+line2<-c("shipping limit/147.1","shipping target/80.38","shipping target/80.38","shipping limit/147.1")
+gd2<-graph(line2)
+plot(gd2,layout=layout.fruchterman.reingold)
+
+line3<-c("deliver estimate/571.25","delivered/272.3","delivered/272.3","arrive estimate/571.25")
+gd3<-graph(line3)
+plot(gd3,layout=layout.fruchterman.reingold)
+```
+```{r}
+library('dplyr')
+summary(project$customer_id)%>% prop.table()
+summary(project$product_id)%>% prop.table()
+summary(project$seller_id)%>% prop.table()
+summary(project$freight_value)%>% as.table()
+summary(project$price)%>% as.table()
+summary(project$order_item_id)%>% prop.table()
+```
+畫出CPM（Critical Path Model）圖
+
+
+```{r}
+cor(project$purchase_to_estimated,project$freight_value)
+cor(project$purchase_to_estimated,project$price)
+```
+檢查海運與預計送達時間之相關性，為0.2769005，代表若是有通過海運，送達時間會變久。
+簡答價格與預計送達時間之相關性，為0.071512，價格與送達時間相關性不高，不會因為價格高低而影響運送速度。
+
