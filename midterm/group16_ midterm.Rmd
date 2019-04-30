@@ -15,6 +15,7 @@ if(!require(pacman)) install.packages("pacman")
 基本設定
 
 ```{r}
+setwd("~/Desktop/")
 library(readr)
 olist_orders_dataset <- read_csv("olist_orders_dataset.csv")
 olist_order_items_dataset <- read_csv("olist_order_items_dataset.csv")
@@ -31,12 +32,6 @@ olist_order
 library(dplyr)
 ```
 使用dplyr套件
-
-```{r}
-setwd("/Users/yao/Desktop/")
-getwd()
-```
-設定路徑、卻哢敬
 
 ```{r}
 purchase_to_approved <- difftime(olist_order$order_approved_at, olist_order$order_purchase_timestamp, tz, units = "hour")
@@ -78,65 +73,58 @@ approved_to_shipping_limit <- difftime(olist_order$shipping_limit_date, olist_or
 
 ```{r}
 time_diff <- arrange(data.frame(order_id, customer_id, order_status, purchase_to_approved, approved_to_carrier, approved_to_shipping_limit, limit_carrier_diff, carrier_to_customer, purchase_to_customer, purchase_to_estimated, estimated_delivered_diff),order_id)
-time_diff
 ```
 增加新欄位
 
 ```{r}
-write.csv(time_diff, "time_diff.csv")
-```
-寫出合併檔案
-
-```{r}
-time_diff = read.csv("time_diff.csv")
-time_diff
-```
-讀取上個步驟的合併檔案
-
-```{r}
+time_diff<-read.csv("time_diff.csv")
 aggregate(order_item_id~customer_id+order_status+purchase_to_approved+approved_to_carrier+approved_to_shipping_limit+limit_carrier_diff+carrier_to_customer+purchase_to_customer+purchase_to_estimated+estimated_delivered_diff+product_id+seller_id+price+freight_value, time_diff, sum)
 ```
+合併檔案
+
+
 ```{r}
 write.csv(time_diff, "time_diff_order_item.csv")
 ```
 寫出合併檔案
 
 ```{r}
+project<-time_diff
 tmp=0
-for(i in 1:100957){
-if(project[i,1]=="1205480caca6c37f55954da838933b8a")tmp[i]="A"
-else if(project[i,1]=="e898b5ef24833b9cb9e2d4f00b937595")tmp[i]="B"
-else if(project[i,1]=="0d861a5e4dd6a9079d89e1330848f0ab")tmp[i]="C"
-else if(project[i,1]=="1abf283d0aba52db4f323567c763714b")tmp[i]="D"
-else if(project[i,1]=="637321037fb8b34323ce7fd8aab4a0f1")tmp[i]="E"
-else if(project[i,1]=="f73d378096054953caa2d69a8abceb73")tmp[i]="F"
+for(i in 1:157222){
+if(project[i,2]=="1205480caca6c37f55954da838933b8a")tmp[i]="A"
+else if(project[i,2]=="e898b5ef24833b9cb9e2d4f00b937595")tmp[i]="B"
+else if(project[i,2]=="0d861a5e4dd6a9079d89e1330848f0ab")tmp[i]="C"
+else if(project[i,2]=="1abf283d0aba52db4f323567c763714b")tmp[i]="D"
+else if(project[i,2]=="637321037fb8b34323ce7fd8aab4a0f1")tmp[i]="E"
+else if(project[i,2]=="f73d378096054953caa2d69a8abceb73")tmp[i]="F"
 else tmp[i]="Other"
 }
-project[,1]=factor(tmp)
+project[,2]=factor(tmp)
 
 pro=0
-for(i in 1:100957){
-if(project[i,11]=="99a4788cb24856965c36a24e339b6058")pro[i]="A"
-else if(project[i,11]=="aca2eb7d00ea1a7b8ebd4e68314663af")pro[i]="B"
-else if(project[i,11]=="422879e10f46682990de24d770e7f83d")pro[i]="C"
-else if(project[i,11]=="d1c427060a0f73f6b889a5c7c61f2ac4")pro[i]="D"
-else if(project[i,11]=="389d119b48cf3043d311335e499d9c6b")pro[i]="E"
-else if(project[i,11]=="53b36df67ebb7c41585e8d54d6772e08")pro[i]="F"
+for(i in 1:157222){
+if(project[i,15]=="99a4788cb24856965c36a24e339b6058")pro[i]="A"
+else if(project[i,15]=="aca2eb7d00ea1a7b8ebd4e68314663af")pro[i]="B"
+else if(project[i,15]=="422879e10f46682990de24d770e7f83d")pro[i]="C"
+else if(project[i,15]=="d1c427060a0f73f6b889a5c7c61f2ac4")pro[i]="D"
+else if(project[i,15]=="389d119b48cf3043d311335e499d9c6b")pro[i]="E"
+else if(project[i,15]=="53b36df67ebb7c41585e8d54d6772e08")pro[i]="F"
 else pro[i]="Other"
 }
-project[,11]=factor(pro)
+project[,15]=factor(pro)
 
 sel=0
-for(i in 1:100957){
+for(i in 1:157222){
 if(project[i,12]=="99a4788cb24856965c36a24e339b6058")sel[i]="A"
-else if(project[i,12]=="aca2eb7d00ea1a7b8ebd4e68314663af")sel[i]="B"
-else if(project[i,12]=="422879e10f46682990de24d770e7f83d")sel[i]="C"
-else if(project[i,12]=="d1c427060a0f73f6b889a5c7c61f2ac4")sel[i]="D"
-else if(project[i,12]=="389d119b48cf3043d311335e499d9c6b")sel[i]="E"
-else if(project[i,12]=="53b36df67ebb7c41585e8d54d6772e08")sel[i]="F"
+else if(project[i,16]=="aca2eb7d00ea1a7b8ebd4e68314663af")sel[i]="B"
+else if(project[i,16]=="422879e10f46682990de24d770e7f83d")sel[i]="C"
+else if(project[i,16]=="d1c427060a0f73f6b889a5c7c61f2ac4")sel[i]="D"
+else if(project[i,16]=="389d119b48cf3043d311335e499d9c6b")sel[i]="E"
+else if(project[i,16]=="53b36df67ebb7c41585e8d54d6772e08")sel[i]="F"
 else sel[i]="Other"
 }
-project[,12]=factor(sel)
+project[,16]=factor(sel)
 write.csv(project,"Group.csv")
 
 ```
