@@ -1,0 +1,155 @@
+---
+title: AS9-1
+author: 中山大學管理學院 第16組
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    highlight: pygments
+    theme: flatly
+    css: style.css
+---
+
+```{r results='hide', message=FALSE, warning=FALSE, echo=F}
+rm(list=ls(all=T))
+knitr::opts_chunk$set(comment = NA)
+knitr::opts_knit$set(global.par = TRUE)
+par(cex=0.8)
+options(scipen=20, digits=5, width=80)
+if(!require(pacman)) install.packages("pacman")
+```
+
+```{r results='hide', message=FALSE, warning=FALSE}
+pacman::p_load(dplyr, ggplot2)
+```
+<br>
+
+### 航空公司顧客資料集
+
+```{r}
+A = read.csv('data/AirlinesCluster.csv')
+summary(A)
+```
+
++ Balance: 可用里程數
++ QualMiles: 可用高等里程數
++ BonusMiles: 過去12個月非飛行里程數
++ BonusTrans: 過去12個月非飛行交易次數
++ FlightMiles: 過去12個月飛行里程數
++ FlightTrans: 過去12個月飛行交易次數
++ DaysSinceEnroll: 會員年資 (天)
+
+
+<br><br>
+
+### 資料常態化
+
+<span style="font-size:24px">`r "\U1F5FF"`</span>
+為甚麼要做資料常態化？<br>
++ 因為七個變數的單位都不同，數值大小落差也很大。將所有變數常態化，根據標準差來分割間距，才能夠知道每筆資料距離母體的位置。進而得知哪個變數的表現較突出，而哪個變數較不突出。
+```{r}
+colMeans(A) %>% sort
+```
++ 先針對變數們做的平均。
+```{r}
+AN = scale(A) %>% data.frame
+```
++ 進行標準化。
+```{r}
+sapply(AN, mean)
+```
++ 標準化數值。
+```{r}
+sapply(AN, sd)
+```
++ 每個變數的標準差都是1，沒有明顯落差。
+<br><br>
+
+### 層級式集群分析 Hirarchical Clustering
+
+
+```{r}
+d = dist(AN, method="euclidean")
+```
+
+
+```{r}
+hc = hclust(d, method='ward.D')
+```
+
+
+```{r}
+plot(hc)
+```
+<br>
+<span style="font-size:24px">`r "\U1F5FF"`</span>
+如何從樹狀圖決定群數？<br>
+
++ 從根節點開始做樹狀結構，子節點、葉節點、類別。如果該資料被歸類在同一類別，就會停止往下衍生；或者，資料中已經沒有辦法再找到新的屬性來做節點分割、資料已經沒有尚未處理的資料；反之則會繼續長下去。如果樹長得太雜亂或over-fitting，也可以進行修剪。
+
+
+```{r}
+kg = cutree(hc, k=5)
+table(kg)
+```
++ 這邊就做了剪枝。
+<br><br>
+
+### 觀察群組特性
+
+```{r}
+sapply(split(A,kg), colMeans) %>% round(2) 
+```
+
+```{r}
+par(cex=0.8)
+split(AN,kg) %>% sapply(colMeans) %>% barplot(beside=T,col=rainbow(7))
+legend('topright',legend=colnames(A),fill=rainbow(7))
+```
+
+<br><br>
+
+<p class="qiz">
+<span style="font-size:24px">`r "\U1F5FF"` 討論問題：</span><br>
+
+&emsp; ■ 請你們為這五個族群各起一個名稱。<br>
+
++ 長期顧客：老顧客，很少搭乘。
++ 中長期顧客：商務旅客，超常出國出差，狂換免費機票，也有許多升艙機會。
++ 中短期顧客：喜歡升等或把紅利兌換成商品及服務，但經常懶得理自己的紅利。
++ 中期顧客：也喜歡兌換商品及服務，年資最輕，可能是年輕族群。
++ 路過的顧客：年資不長，不常搭乘，偶爾路過不小心買到票的；或者為了搶便宜/其他目的機票才辦會員。
+
+<br>
+&emsp; ■ 請你們為這五個族群各設計一個行銷策略。<br>
+
++ 長期顧客：推出高年資才可享有的超低價機票，促進此族群搭飛機。
++ 中長期顧客：推出專屬紅利兌換商品，鼓勵此族群顧客多多利用紅利來兌換服務及商品。
++ 中短期顧客：推出里程兌換機票的專屬福利，兌換機票只要50%福利。
++ 中期顧客：推出新戶專屬優惠，搭機即享免費升艙。
++ 路過的顧客：發廣告E-mail給他們，舉辦一個抽獎活動，鼓勵他們填寫公司的問卷。
+
+&emsp; ■ 統計上最好的分群也是實務上最好的分群嗎？<br>
+
++ 不見得，有時統計上的分群不符合實務上的邏輯，或統計上分群可能會分的太細，不是所有分群都是我們鎖定的客群。
+
+&emsp; ■ 除了考慮群間和群間距離之外，實務上的分群通常還需要考慮那些因數？<br>
+</p class="qiz">
+
++ 考慮變數之間是否互有因果關係。
++ 標準化後是否有明顯落差之變數。
++ 資料是否符合常態分佈。
++ 是否有遺漏變數問題。
++ 函式設定錯誤問題。
++ 資料是否有NA值。
++ 特徵變數如：年齡、職業等。
+
+<br><br><br><hr>
+
+
+
+
+
+
+
+
+
