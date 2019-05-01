@@ -132,20 +132,6 @@ write.csv(project,"Group.csv")
 
 
 ```{r}
-library('lavaan')
-model <- 'Customer = ~ purchase_to_approved + purchase_to_customer
-              Producer = ~ approved_to_carrier + carrier_to_customer 
-              Logistics = ~ approved_to_shipping_limit + limit_carrier_diff '
-Customer ~ Logistic + Producer
-Producer ~ Customer + Logistic
-Logistic ~ Producer
-result <- sem(model,data=project)
-summary(result,standardized=TRUE)
-```
-利用CPM方法檢測模型效果。
-
-
-```{r}
 x1=project$purchase_to_approved
 hist(x1,col='blue')
 x2=project$approved_to_carrier
