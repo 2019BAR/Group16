@@ -1,0 +1,159 @@
+---
+title: UNIT12A：邏輯式性回歸 Logistic Regression
+author: 第16組
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    highlight: pygments
+    theme: flatly
+    css: style.css
+---
+
+```{r results='hide', message=FALSE, warning=FALSE, echo=F}
+# Formating Codes.  Do not change the codes in this chunk !!
+rm(list=ls(all=T))
+knitr::opts_chunk$set(comment = NA)
+knitr::opts_knit$set(global.par = TRUE)
+par(cex=0.8)
+options(scipen=20, digits=5, width=80)
+if(!require(pacman)) install.packages("pacman")
+```
+<hr>
+
+```{r results='hide', message=FALSE, warning=FALSE}
+pacman::p_load(ggplot2, dplyr)
+```
+<br><hr>
+
+### 【A】簡單案例
+
++ 資料：Binary Target Variable
+
+```{r}
+D = read.csv("data/quality.csv")  # Read in dataset
+D = D[,c(14, 4, 5)]
+names(D) = c("y", "x1", "x2")
+table(D$y)
+```
+
++ 方法：`glm(, family=binomial)` Generalize Liner Model
+
+```{r}
+glm1 = glm(y~x1+x2, D, family=binomial)
+summary(glm1)
+```
+
+```{r}
+b = coef(glm1); b   # extract the regression coef
+```
+
++ $logit = f(x) = b_0 + b_1 x_1 + b_2 x_2$
+
++ $odd = Exp(logit)$
+
++ $Pr[y = 1] = prob = \frac{odd}{1+odd}$
+
+Given `x1=3, x2=4`, what are the predicted logit, odd and probability?
+```{r}
+logit = sum(b * c(1, 3, 4))
+odd = exp(logit)
+prob = odd/(1+odd)
+c(logit=logit, odd=odd, prob=prob)
+```
+
+<span style="font-size:24px"> `r "\U1F5FF"` : </span>
+What if `x1=2, x2=3`?
+
+```{r}
+logit = sum(b * c(1, 2, 3))
+odd = exp(logit)
+prob = odd/(1+odd)
+c(logit=logit, odd=odd, prob=prob)
+```
+<br>
+
+<span style="font-size:24px"> `r "\U1F4A1"` : </span>
+`glm(family=binomial)`的功能：在 $\{x\}$ 的空間之中，找出區隔 $y$ 的(類別)界線
+
+We can plot the line of `logit = 0` or `odd = 1, prob = 0.5` on the plane of $X$
+```{r fig.width=3.6, fig.height=3.6}
+par(cex=0.8, mar=c(4,4,1,1))
+plot(D$x1, D$x2, col=2+D$y, pch=20, cex=1.2, xlab="X1", ylab="X2")
+abline(-b[1]/b[3], -b[2]/b[3], col="blue", lty=3)
+```
+
+Furthermore, we can translate probability, logit and coefficents to intercept & slope ...
+
+$$f(x) = b_0 + b_1 x_1 + b_2 x_2 \; \Rightarrow \;  x_2 = \frac{f - b_0}{b_2} - \frac{b_1}{b_2}x_1$$
+
+```{r  fig.width=3.6, fig.height=3.6}
+p = seq(0.1,0.9,0.1)
+logit = log(p/(1-p))
+data.frame(prob = p, logit)
+```
+
+then mark the contours of proabilities into the scatter plot 
+```{r  fig.width=3.6, fig.height=3.6}
+par(cex=0.8, mar=c(4,4,1,1))
+plot(D$x1, D$x2, col=2+D$y,
+     pch=20, cex=1.3, xlab='X1', ylab='X2')
+for(f in logit) {
+  abline((f-b[1])/b[3], -b[2]/b[3], col=ifelse(f==0,'blue','cyan')) }
+```
+
+<span style="font-size:24px"> `r "\U1F5FF"` : </span>
+What do the blue/cyan lines means?<br>
+#ANS: 0.1~0.9 的等機率線，其中深藍色為p=0.5<br>
+<span style="font-size:24px"> `r "\U1F5FF"` : </span>
+Given any point in the figure above, how can you tell its (predicted) probability approximately?<br>
+#ANS:每條線代表不同機率，由點到線的距離推估機率為何<br>
+<br><hr>
+
+### 【B】 邏輯式回歸
+
+##### 機率、勝率(Odd)、Logit
+
++ Odd =  $p/(1-p)$
+
++ Logit = $log(odd)$ = $log(\frac{p}{1=p})$
+
++ $o = p/(1-p)$ ; $p = o/(1+o)$ ;  $logit = log(o)$
+
+```{r fig.height=3.6, fig.width=7}
+par(cex=0.8, mfcol=c(1,2))
+curve(x/(1-x), 0.02, 0.98, col='cyan',lwd=2, 
+    ylab='odd', xlab='p')
+abline(v=seq(0,1,0.1), h=seq(0,50,5), col='lightgray', lty=3)
+curve(log(x/(1-x)), 0.005, 0.995, lwd=2, col='purple', 
+      ylab="logit",xlab='p')
+abline(v=seq(0,1,0.1), h=seq(-5,5,1), col='lightgray', lty=3)
+```
+<br>
+
+##### Logistic Function & Logistic Regression
+
++ Linear Model: $y = f(x) = b_0 + b_1x_1 + b_2x_2 + ...$
+
++ General Linear Model(GLM): $y = Link(f(x))$ 
+
++ Logistic Regression: $logit(y) = log(\frac{p}{1-p}) = f(x) \text{ where } p = prob[y=1]$ 
+
++ Logistic Function: $Logistic(F_x) = \frac{1}{1+Exp(-F_x)} = \frac{Exp(F_x)}{1+Exp(F_x)}$
+
+```{r  fig.width=6, fig.height=3.6}
+par(cex=0.8, mfrow=c(1,1))
+curve(1/(1+exp(-x)), -5, 5, col='blue', lwd=2,main="Logistic Function",
+      xlab="f(x): the logit of y = 1", ylab="the probability of y = 1")
+abline(v=-5:5, h=seq(0,1,0.1), col='lightgray', lty=2)
+abline(v=0,h=0.5,col='pink')
+points(0,0.5,pch=20,cex=1.5,col='red')
+```
+
+<span style="font-size:24px"> `r "\U1F5FF"` : </span>
+What are the definiion of `logit` & `logistic function`? What is the relationship between them?<br>
+#ANS: logit是對odd做對數轉換，logistic function是要將logit後的odd回推為機率時使用的函數
+
+<br><br><br><hr>
+
+
+
