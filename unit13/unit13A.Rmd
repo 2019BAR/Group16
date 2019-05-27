@@ -1,0 +1,203 @@
+---
+title: UNIT13A：類別模型、預測機率與商業決策 
+subtitle: 案例一：預防性醫療
+author: 中山大學管理學院 第十六小組
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    highlight: pygments
+    theme: flatly
+    css: style.css
+---
+
+```{r results='hide', message=FALSE, warning=FALSE, echo=F}
+# Formating Codes.  Do not change the codes in this chunk !!
+rm(list=ls(all=T))
+knitr::opts_chunk$set(comment = NA)
+knitr::opts_knit$set(global.par = TRUE)
+par(cex=0.8)
+options(scipen=20, digits=5, width=80)
+if(!require(pacman)) install.packages("pacman")
+```
+<hr>
+
+```{r results='hide', message=FALSE, warning=FALSE}
+pacman::p_load(caTools, ggplot2, dplyr)
+```
+<br><hr>
+
+### 【A】整理資料、建立模型
+
++ 資料：糖尿病保戶醫療紀錄
+```{r}
+setwd("~/Desktop/unit13")
+D = read.csv("data/quality.csv")  # Read in dataset
+summary(D)
+```
+
++ 基礎機率
+```{r}
+base = table(D$PoorCare) # the base probability
+```
+
++ 分割資料 (分割向量)
+```{r}
+set.seed(88)
+split = sample.split(D$PoorCare, SplitRatio = 0.75)  # split vector
+table(split) %>% prop.table()
+```
+
++ 目標變數與分割向量的列聯表
+```{r}
+table(D$PoorCare, split) %>% prop.table(2)
+```
+
++ 使用分割向量分割資料
+```{r}
+TR = subset(D, split == TRUE)
+TS = subset(D, split == FALSE)
+```
+
++ 建立模型
+```{r}
+glm1 = glm(PoorCare ~ OfficeVisits + Narcotics, TR, family=binomial)
+summary(glm1)
+```
+<br><hr>
+
+
+### 【B】模型、係數與效果
+
+**模型：**
+
++ `Pr[y = 1] = 1/(1+exp(-f(x)))` 
+
++ $Logit = f(x) = b_0 + b_1 x_1 + b_2 x_2 \;\; (1)$
+
++ $Logit = f(x) = -2.6461 + 0.0821 \times OfficeVisits + 0.0763 \times Narcotics \;\; (2)$
+
+**係數：**
+
++ $Odd_0 = Exp(b_0 + b_1 x_1)\;\;(3)$
+
++ $Odd_1 = Exp[b_0 + b_1(x_1+1)] = Exp(b_0 + b_1 x_1 + b_1) = Exp(b_0 + b_1 x_1) \times Exp(b_1) \;\;(4)$
+
++ $Odd_1 = Odd_0 \times Exp(b_1) \:\:(5)$
+
++ $facr{Odd_1}{Odd_0} =  Exp(b_1) \:\:(6)$
+
+<br>
+
+**機率和勝率之間的關係** 
+```{r} 
+pop = function(p, k) {o = p/(1-p);  o = k * o; o/(1+o)}
+p0 = seq(0.1, 0.9, 0.1); k = 2
+p1 = sapply(seq(0.1, 0.9, 0.1), pop, k)
+data.frame(k, p0, p1, difference=p1-p0, multiplier=p1/p0) %>% round(2) 
+```
+
+**變數的邊際效果** 
+```{r}
+df = data.frame(OfficeVisits = median(D$OfficeVisits), Narcotics=median(D$Narcotics))
+predict(glm1, df, type="response")
+```
+
+```{r}
+df = data.frame(OfficeVisits = median(D$OfficeVisits)+1, Narcotics=median(D$Narcotics))
+predict(glm1, df, type="response")
+```
+
+```{r}
+df = data.frame(OfficeVisits = median(D$OfficeVisits), Narcotics=median(D$Narcotics)+1)
+predict(glm1, df, type="response")
+```
+
+```{r}
+df = data.frame(OfficeVisits = median(D$OfficeVisits)+1, Narcotics=median(D$Narcotics)+1)
+predict(glm1, df, type="response")
+```
+<p class="wwl">
+<span style="font-size:24px">`r "\U1F4A1"` 學習重點：</span><br>
+&emsp; ■ 係數的指數就是勝率比；也就是說，$x_i$ 每增加一，勝率($Odd[y = 1]$)會變成原來的 $Exp(b_i)$ 倍<br>
+&emsp; ■ 各預測變數的(勝率)效果是相乘，而不是相加<br>
+&emsp; ■ 機率和勝率之間的關係並不是線性的：<br>
+&emsp; &emsp; ■ 邏輯式回歸裡面各預測變數的勝率效果是固定的<br>
+&emsp; &emsp; ■ 但是他們的機率效果並不是固定的<br>
+&emsp; &emsp; ■ 我們需先推算原先的機率，才能推算變數的機率效果<br><br>
+</p class="wwl"><br>
+
+
+```{r}
+quantile(D$OfficeVisits)
+```
+
+```{r}
+quantile(D$Narcotics)
+```
+```{r}
+df = data.frame(OfficeVisits = quantile(D$OfficeVisits,0.25), Narcotics=quantile(D$Narcotics,0.25))
+q1= predict(glm1, df, type="response")
+q1
+
+```
+```{r}
+summary(glm1)
+exp(0.0821)
+exp(0.0763)
+```
+```{r}
+df = data.frame(OfficeVisits = quantile(D$OfficeVisits,0.25)+1, Narcotics=quantile(D$Narcotics,0.25))
+q2=predict(glm1, df, type="response")
+q2-q1 #Answer
+df = data.frame(OfficeVisits = quantile(D$OfficeVisits,0.25), Narcotics=quantile(D$Narcotics,0.25)+1)
+q3=predict(glm1, df, type="response")
+q3-q1 #Answer
+```
+<br>
+
+<p class="qiz">
+<span style="font-size:24px">`r "\U1F5FF"` 練習： </span><br>
+&emsp; ■ 當`OfficeVisits`和`Narcotic`分別等於他們的第一分位(`Q1`)時：<br>
+&emsp; &emsp; ■ `PoorCare = 1`的機率是？<br>
+&emsp;## 25%分位數的機率為0.11192。<br>
+&emsp; &emsp; ■ 兩個自變數的勝率效果分別是？<br>
+&emsp;## 分別是1.0856倍和1.0793倍。<br>
+&emsp; &emsp; ■ 兩個自變數的機率效果分別是？<br>
+&emsp;## 分別是0.0084263和0.0078117。<br>
+
+```{r}
+df = data.frame(OfficeVisits = quantile(D$OfficeVisits,0.75), Narcotics=quantile(D$Narcotics,0.75))
+q4= predict(glm1, df, type="response")
+q4
+```
+```{r}
+summary(glm1)
+exp(0.0821)
+exp(0.0763)
+```
+```{r}
+df = data.frame(OfficeVisits = quantile(D$OfficeVisits,0.75)+1, Narcotics=quantile(D$Narcotics,0.75))
+q5=predict(glm1, df, type="response")
+q5-q4 #Answer
+df = data.frame(OfficeVisits = quantile(D$OfficeVisits,0.75), Narcotics=quantile(D$Narcotics,0.75)+1)
+q6=predict(glm1, df, type="response")
+q6-q4 #Answer
+```
+
+
+<br>
+&emsp; ■ 當`OfficeVisits`和`Narcotic`分別等於他們的第三分位(`Q3`)時：<br>
+&emsp; &emsp; ■ `PoorCare = 1`的機率是？<br>
+&emsp;## 75%分位數的機率為0.28947。<br>
+&emsp; &emsp; ■ 兩個自變數的勝率效果分別是？<br>
+&emsp;## 分別是1.0856倍和1.0793倍。<br>
+&emsp; &emsp; ■ 兩個自變數的機率效果分別是？<br>
+&emsp;## 分別是0.017178倍和0.0159442倍。<br>
+&emsp; ■ 比較以上兩個題目的答案，我們可以觀察到什麼？<br>
+&emsp;## 勝率效果沒有差別，不過在75%分位數和25%分位數的機率不同，但並沒有呈現線性成長或指數型成長。而兩個字變數的機率效果則隨著分位數的提高而上升。<br>
+</p class="qiz">
+
+<br><br><br><hr>
+
+
+
