@@ -1,0 +1,244 @@
+---
+title: UNIT13C：類別模型、預測機率與商業決策 
+subtitle: 預測與決策
+author: 中山大學管理學院  第十六小組
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    highlight: pygments
+    theme: flatly
+    css: style.css
+---
+
+```{r results='hide', message=FALSE, warning=FALSE, echo=F}
+# Formating Codes.  Do not change the codes in this chunk !!
+rm(list=ls(all=T))
+knitr::opts_chunk$set(comment = NA)
+knitr::opts_knit$set(global.par = TRUE)
+par(cex=0.8)
+options(scipen=20, digits=5, width=80)
+if(!require(pacman)) install.packages("pacman")
+```
+<hr>
+
+```{r results='hide', message=FALSE, warning=FALSE}
+pacman::p_load(caTools, ggplot2, dplyr)
+D = read.csv("data/quality.csv")  # Read in dataset
+set.seed(88)
+split = sample.split(D$PoorCare, SplitRatio = 0.75)  # split vector
+TR = subset(D, split == TRUE)
+TS = subset(D, split == FALSE)
+glm1 = glm(PoorCare ~ OfficeVisits + Narcotics, TR, family=binomial)
+summary(glm1)
+```
+<br><hr>
+
+### 【A】從預測到決策
+
+![Fig 13.3 - 從預測到決策](Fig13.3.JPG)
+
+<br><hr>
+
+### 【B】預測機率分佈 (DPP)
+因為這個資料集很小，我們使用全部的資料來做模擬 (通常我們是使用測試資料集)
+```{r fig.height=3.2, fig.width=7}
+pred = predict(glm1, D, type="response")
+y = D$PoorCare
+data.frame(pred, y) %>% 
+  ggplot(aes(x=pred, fill=factor(y))) + 
+  geom_histogram(bins=20, col='white', position="stack", alpha=0.5) +
+  ggtitle("Distribution of Predicted Probability (DPP,FULL)") +
+  xlab("predicted probability")
+```
+<br><hr>
+
+### 【C】試算期望報酬
+
+**報酬矩陣 Payoff Matrix**
+
++ TN: NoAction, GoodCare; 沒事   
++ FN: NoAction, PoorCare; 風險成本很高 
++ FP: Action, GoodCare;   預防成本
++ TP: Action, PoorCare;   預防成本 + 降低後的風險成本
+
+```{r}
+payoff = matrix(c(0,-100,-10,-50),2,2)
+payoff
+```
+
+**期望報酬 Expected Payoff**
+```{r fig.height=3.2, fig.width=7}
+cutoff = seq(0, 1, 0.01)
+result = sapply(cutoff, function(p) sum(
+  table(factor(y==1, c(F,T)), factor(pred>p, c(F,T))) # confusion matrix
+  * payoff ))
+i = which.max(result)
+par(cex=0.7, mar=c(4,4,3,1))
+plot(cutoff, result, type='l', col='cyan', lwd=2, main=sprintf(
+  "Optomal Expected Result: $%d @ %.2f",result[i],cutoff[i]))
+abline(v=seq(0,1,0.1),h=seq(-6000,0,100),col='lightgray',lty=3)
+points(cutoff[i], result[i], pch=20, col='red', cex=2)
+```
+<br><hr>
+
+### 【D】策略模擬
+<p class="qiz">
+<span style="font-size:24px">`r "\U1F5FF"` 練習： </span><br>
+執行`Sim13.R`，先依預設的報酬矩陣回答下列問題：<br>
+&emsp; 【A】 最佳臨界機率是？ 它所對應的期望報酬是多少？<br>
+&emsp; 【B】 什麼都不做時，臨界機率和期望報酬各是多少？<br>
+&emsp; 【C】 每位保戶都做時，臨界機率和期望報酬各是多少？<br>
+&emsp; 【D】 以上哪一種做法期的望報酬比較高？<br>
+&emsp; 【E】 在所有的商務情境都是這種狀況嗎？<br><br>
+藉由調整報酬矩陣：<br>
+&emsp; 【F】 模擬出「全不做」比「全做」還要好的狀況<br>
+&emsp; 【G】 並舉出一個會發生這種狀況的商務情境<br><br>
+有五種成本分別為`$5, $10, $15, $20, $30`的介入方法，它們分別可以將風險成本從`$100`降低到`$70, $60, $50, $40, $25` ...<br>
+&emsp; 【H】 它們的最佳期望報酬分別是多少？<br>
+&emsp; 【I】 哪一種介入方法的最佳期望報酬是最大的呢？<br><br>
+</p class="qiz">
+
+**使用`manipulate`套件做策略模擬**
+```{r eval=F}
+library(manipulate)
+manipulate({
+  payoff = matrix(c(TN,FN,FP,TP),2,2)
+  cutoff = seq(0, 1, 0.01)
+  result = sapply(cutoff, function(p) sum(
+    table(factor(y==1, c(F,T)), factor(pred>p, c(F,T))) # confusion matrix
+    * payoff ))
+  i = which.max(result)
+  par(cex=0.7)
+  plot(cutoff, result, type='l', col='cyan', lwd=2, main=sprintf(
+    "Optomal Expected Result: $%d @ %.2f",result[i],cutoff[i]))
+  abline(v=seq(0,1,0.1),h=seq(-10000,0,100),col='lightgray',lty=3)
+  points(cutoff[i], result[i], pch=20, col='red', cex=2)
+  },
+  TN = slider(-100,0,   0,step=5),
+  FN = slider(-100,0,-100,step=5),
+  FP = slider(-100,0, -10,step=5),
+  TP = slider(-100,0, -50,step=5)
+  ) 
+```
+
+
+<br>
+
+### 【D】策略模擬
+<p class="qiz">
+<span style="font-size:24px">`r "\U1F5FF"` 答案： </span><br>
+執行`Sim13.R`，先依預設的報酬矩陣回答下列問題：<br>
+&emsp; 【A】 臨界機率為0.16；期望報酬為-2360。<br>
+&emsp; 【B】 臨界機率為1；期望報酬為-3300。<br>
+&emsp; 【C】 臨界機率為0；期望報酬為-2630。<br>
+&emsp; 【D】 以全做或全不做的情況來說，全做的期望報酬較高；若考慮其他情境時，只有某一些人做，其期望報酬會比全做或全不做都還要高。<br>
+&emsp; 【E】 不一定，但多數商務情境不會一次全部投資或都不投資，而會透過評估進行部分投資。<br><br>
+藉由調整報酬矩陣：<br>
+&emsp; 【F】 設TN=0，FN=0，FP=-100，TP=0。<br>
+&emsp; 【G】 衡量要不要買此期高額的樂透。<br><br>
+有五種成本分別為`$5, $10, $15, $20, $30`的介入方法，它們分別可以將風險成本從`$100`降低到`$70, $60, $50, $40, $25` ...<br>
+&emsp; 【I】 最後一種，其最佳期望報酬為-2700。<br><br>
+</p class="qiz">
+
+
+<br>
+
+**練習**
+
++ 預設的報酬矩陣
+```{r}
+#都不做
+result[101]
+
+#都做
+result[1]
+```
+
++ 藉由調整報酬矩陣
+```{r}
+#一
+payoff1 = matrix(c(0,-100,-5,-75),2,2)
+payoff1
+
+cutoff1 = seq(0, 1, 0.01)
+result1 = sapply(cutoff1, function(p) sum(
+  table(factor(y==1, c(F,T)), factor(pred>p, c(F,T))) # confusion matrix
+  * payoff1 ))
+i = which.max(result1)
+par(cex=0.7, mar=c(4,4,3,1))
+plot(cutoff1, result1, type='l', col='cyan', lwd=2, main=sprintf(
+  "Optomal Expected Result: $%d @ %.2f",result1[i],cutoff1[i]))
+abline(v=seq(0,1,0.1),h=seq(-6000,0,100),col='lightgray',lty=3)
+points(cutoff1[i], result1[i], pch=20, col='red', cex=2)
+```
+
+```{r}
+#二
+payoff2 = matrix(c(0,-100,-10,-70),2,2)
+payoff2
+
+cutoff2 = seq(0, 1, 0.01)
+result2 = sapply(cutoff2, function(p) sum(
+  table(factor(y==1, c(F,T)), factor(pred>p, c(F,T))) # confusion matrix
+  * payoff2 ))
+i = which.max(result2)
+par(cex=0.7, mar=c(4,4,3,1))
+plot(cutoff2, result2, type='l', col='cyan', lwd=2, main=sprintf(
+  "Optomal Expected Result: $%d @ %.2f",result2[i],cutoff2[i]))
+abline(v=seq(0,1,0.1),h=seq(-6000,0,100),col='lightgray',lty=3)
+points(cutoff2[i], result2[i], pch=20, col='red', cex=2)
+```
+
+```{r}
+#三
+payoff3 = matrix(c(0,-100,-15,-65),2,2)
+payoff3
+
+cutoff3 = seq(0, 1, 0.01)
+result3 = sapply(cutoff3, function(p) sum(
+  table(factor(y==1, c(F,T)), factor(pred>p, c(F,T))) # confusion matrix
+  * payoff3 ))
+i = which.max(result3)
+par(cex=0.7, mar=c(4,4,3,1))
+plot(cutoff3, result3, type='l', col='cyan', lwd=2, main=sprintf(
+  "Optomal Expected Result: $%d @ %.2f",result3[i],cutoff3[i]))
+abline(v=seq(0,1,0.1),h=seq(-6000,0,100),col='lightgray',lty=3)
+points(cutoff3[i], result3[i], pch=20, col='red', cex=2)
+```
+
+```{r}
+#四
+payoff4 = matrix(c(0,-100,-20,-60),2,2)
+payoff4
+
+cutoff4 = seq(0, 1, 0.01)
+result4 = sapply(cutoff4, function(p) sum(
+  table(factor(y==1, c(F,T)), factor(pred>p, c(F,T))) # confusion matrix
+  * payoff4 ))
+i = which.max(result4)
+par(cex=0.7, mar=c(4,4,3,1))
+plot(cutoff4, result4, type='l', col='cyan', lwd=2, main=sprintf(
+  "Optomal Expected Result: $%d @ %.2f",result4[i],cutoff4[i]))
+abline(v=seq(0,1,0.1),h=seq(-6000,0,100),col='lightgray',lty=3)
+points(cutoff4[i], result4[i], pch=20, col='red', cex=2)
+```
+
+```{r}
+#五
+payoff5 = matrix(c(0,-100,-30,-55),2,2)
+payoff5
+
+cutoff5 = seq(0, 1, 0.01)
+result5 = sapply(cutoff5, function(p) sum(
+  table(factor(y==1, c(F,T)), factor(pred>p, c(F,T))) # confusion matrix
+  * payoff5 ))
+i = which.max(result5)
+par(cex=0.7, mar=c(4,4,3,1))
+plot(cutoff5, result5, type='l', col='cyan', lwd=2, main=sprintf(
+  "Optomal Expected Result: $%d @ %.2f",result5[i],cutoff5[i]))
+abline(v=seq(0,1,0.1),h=seq(-6000,0,100),col='lightgray',lty=3)
+points(cutoff5[i], result5[i], pch=20, col='red', cex=2)
+```
+
+
+<br><br><br><hr>
