@@ -1,0 +1,237 @@
+---
+title: 期末行銷企劃競賽
+author: group 16
+---
+
+```{r}
+rm(list=ls())
+gc()
+setwd("~/Desktop/")
+load("/Users/linyuci/Desktop/Ta_Feng_2.rdata")
+data<-Z
+rm(Z)
+library(dplyr)
+```
+
+```{r}
+# 年份百分比資料。
+table(data$Y) %>% prop.table()
+```
+
+```{r}
+#月份百分比資料
+table(data$m) %>% prop.table()
+```
+
+```{r}
+#交易日資料
+table(data$d) %>% prop.table()
+```
+
+```{r}
+#大客戶資料
+table(data$CUSTOMER_ID) %>% prop.table()
+```
+
+```{r}
+#pin_code資料
+table(data$PIN_CODE) %>% prop.table()
+```
+
+```{r}
+#品項資料
+table(data$PRODUCT_SUBCLASS) %>% prop.table()
+```
+
+```{r}
+#商品編號資料
+table(data$PRODUCT_ID) %>% prop.table()
+summary(data)
+```
+
+```{r}
+#年份整理
+y=0
+for(i in 1:770767){
+  if(data[i,1]==2000)y[i]="1"
+  else y[i]="0"
+}
+data[,1]=factor(y)
+
+#月份整理
+m=0
+for(i in 1:770767){
+  if(data[i,2]==1)m[i]="1"
+  else if(data[i,2]==2)m[i]="2"
+  else if(data[i,2]==11)m[i]="11"
+  else if(data[i,2]==12)m[i]="12"
+  else m[i]="0"
+}
+data[,2]=factor(m)
+
+#日期整理
+d=0
+for(i in 1:770767){
+  if(data[i,3]==22)d[i]="22"
+  else if(data[i,3]==17)d[i]="17"
+  else if(data[i,3]==14)d[i]="14"
+  else if(data[i,3]==18)d[i]="18"
+  else if(data[i,3]==10)d[i]="10"
+  else if(data[i,3]==21)d[i]=="21"
+  else d[i]="1"
+}
+data[,3]=factor(d)
+
+#大客戶
+summary(data$CUSTOMER_ID)
+big=0
+for(i in 1:770767){
+  if(data[i,4]==20459)big[i]="6"
+  else if(data[i,4]==2112589)big[i]="5"
+  else if(data[i,4]==2112596)big[i]="4"
+  else if(data[i,4]==2113579)big[i]="3"
+  else if(data[i,4]==1847994)big[i]="2"
+  else if(data[i,4]==426053)big[i]="1"
+  else big[i]="0"
+}
+data[,4]=factor(big)
+
+#年齡整理
+age=0
+for(i in 1:770767){
+  if(data[i,5]>6)age[i]="5"
+  else if(data[i,5]>4.628)age[i]="4"
+  else if(data[i,5]>4)age[i]="3"
+  else if(data[i,5]>3)age[i]="2"
+  else age[i]="1"
+}
+data[,5]=factor(age)
+
+#pin code整理
+pin=0
+for(i in 1:770767){
+  if(data[i,6]==115)pin[i]="5"
+  else if(data[i,6]==221)pin[i]="4"
+  else if(data[i,6]==110)pin[i]="3"
+  else if(data[i,6]==114)pin[i]="2"
+  else if(data[i,6]==106)pin[i]="1"
+  else pin[i]="0"
+}
+data[,6]=factor(pin)
+
+#商品種類整理
+ps=0
+for(i in 1:770767){
+  if(data[i,7]==100205)ps[i]="6"
+  else if(data[i,7]==120103)ps[i]="5"
+  else if(data[i,7]==110401)ps[i]="4"
+  else if(data[i,7]==110411)ps[i]="3"
+  else if(data[i,7]==1302064)ps[i]="2"
+  else if(data[i,7]==130315)ps[i]="1"
+  else ps[i]="0"
+}
+data[,7]=factor(ps)
+
+#ID整理
+id=0
+for(i in 1:770767){
+  if(data[i,8]==4714981010038)id[i]="6"
+  else if(data[i,8]==4711271000014)id[i]="5"
+  else if(data[i,8]==4719090900065)id[i]="4"
+  else if(data[i,8]==4711080010112)id[i]="3"
+  else if(data[i,8]==4710114128038)id[i]="2"
+  else if(data[i,8]==4710265849066)id[i]="1"
+  else id[i]="0"
+}
+data[,8]=factor(id)
+
+#Amount整理
+amount=0
+for(i in 1:770767){
+  if(data[i,9]>1)amount[i]="5"
+  else if(data[i,9]==1)amount[i]="4"
+  else amount[i]="3"
+}
+data[,9]=factor(amount)
+
+#asset 整理
+asset=0
+for(i in 1:770767){
+  if(data[i,10]>126.6)asset[i]="5"
+  else if(data[i,10]>121)asset[i]="4"
+  else if(data[i,10]>71)asset[i]="3"
+  else if(data[i,10]>44)asset[i]="2"
+  else asset[i]="1"
+}
+data[,10]=factor(asset)
+
+#sale整理
+sale=0
+for(i in 1:770767){
+  if(data[i,11]>132.1)sale[i]="5"
+  else if(data[i,11]>132)sale[i]="4"
+  else if(data[i,11]>76)sale[i]="3"
+  else if(data[i,11]>42)sale[i]="2"
+  else sale[i]="1"
+}
+data[,11]=factor(sale)
+
+#cost整理
+cost=0
+for(i in 1:770767){
+  if(data[i,12]>960)cost[i]="5"
+  else if(data[i,12]>140)cost[i]="4"
+  else if(data[i,12]>71)cost[i]="3"
+  else if(data[i,12]>37)cost[i]="2"
+  else cost[i]="1"
+}
+data[,12]=factor(cost)
+
+#Gross整理
+data$Class<-ifelse(data$GROSS_FURUTE>0,"1","0")
+data$Class<-as.factor(data$Class)
+
+#take a look
+summary(data)
+data<-data[, colSums(is.na(data)) != nrow(data)]
+data<-data[,-13]
+str(data)
+
+data = data[complete.cases(data),]
+set.seed(200)
+n<-nrow(data)
+train_indices<-1:round(0.5*n)
+traindata<-data[train_indices,]
+test_indices<-(round(0.5*n)):n
+testdata<-data[test_indices,]
+```
+
+```{r}
+library(glmnet)
+library(e1071)
+#建立SVM模型
+svm_model <- svm(Class~Y+m+d+AGE_GROUP+PIN_CODE+PRODUCT_SUBCLASS+PRODUCT_ID+AMOUNT+ASSET+SALES_PRICE+Costofgoodssold,data = traindata)
+```
+
+```{r}
+#訓練集/測試集分別訓練
+results1 <- predict(svm_model,traindata)
+results2 <- predict(svm_model,testdata)
+```
+
+```{r}
+#訓練集成果
+table(real=traindata$Class,predict=results1)
+confus.matrix1=table(real=traindata$Class,predict=results1)
+train_accuracy<-sum(diag(confus.matrix1))/sum(confus.matrix1)
+train_accuracy
+```
+
+```{r}
+#測試集成果
+table(real=testdata$Class,predict=results2)
+confus.matrix2=table(real=testdata$Class,predict=results2)
+test_accuarcy<-sum(diag(confus.matrix2))/sum(confus.matrix2)
+test_accuarcy
+```
+

@@ -1,0 +1,51 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r}
+pacman::p_load(magrittr, readr, caTools, ggplot2, dplyr)
+load("Ta_Feng_2.rdata")
+```
+
+```{r}
+table(Z$m)/770767
+table(Z$d)/770767
+```
+
+```{r}
+Z$AGE_GROUP = as.numeric(Z$AGE_GROUP)
+cor(Z$AGE_GROUP,Z$SALES_PRICE)
+#相關係數：-0.007241397，負相關
+ggplot(Z , aes(x = AGE_GROUP, y = SALES_PRICE)) +  geom_bar(stat = "identity")
+```
+
+```{r}
+Z$Costofgoodssold=Z$AMOUNT*Z$ASSET
+Z$Costofgoodssold
+```
+
+```{r}
+class(Z$PRODUCT_SUBCLASS)
+barplot(prop.table(table(Z$PRODUCT_SUBCLASS)))
+barplot(prop.table(table(Z$AGE_GROUP)))
+```
+
+```{r}
+cor(Z$ASSET,Z$SALES_PRICE)
+#相關係數：0.9979461，高度相關
+ggplot(Z , aes(x = ASSET, y = SALES_PRICE)) + geom_line()
+ggplot(Z , aes(x = ASSET, y = SALES_PRICE)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth()
+```
+
+```{r}
+Z$GROSS_FURUTE=(Z$SALES_PRICE-Z$ASSET)*Z$AMOUNT
+Z$GROSS_FURUTE
+```
+
+```{r}
+save(Z, file = "Ta_Feng_2.rdata")
+```
+

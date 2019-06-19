@@ -1,0 +1,66 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+```{r echo=T, message=F, cache=F, warning=F}
+rm(list=ls(all=T))
+Sys.setlocale("LC_TIME","C")
+pacman::p_load(magrittr, readr, caTools, ggplot2, dplyr)
+```
+
+```{r}
+setwd('/Users/yao/Desktop')
+Ta_feng = read_csv("ta_feng_all_months_merged.csv") %>% data.frame
+nrow(Ta_feng)
+```
+
+```{r}
+Ta_feng$TRANSACTION_DT = as.Date(Ta_feng$TRANSACTION_DT, format="%m/%d/%Y")
+Ta_feng$Y = format(Ta_feng$TRANSACTION_DT, "%Y")
+Ta_feng$m = format(Ta_feng$TRANSACTION_DT, "%m")
+Ta_feng$d = format(Ta_feng$TRANSACTION_DT, "%d")
+```
+
+```{r}
+Z <- data.frame(factor(Ta_feng$Y), factor(Ta_feng$m), factor(Ta_feng$d), Ta_feng$CUSTOMER_ID, Ta_feng$AGE_GROUP, Ta_feng$PIN_CODE, factor(Ta_feng$PRODUCT_SUBCLASS),Ta_feng$PRODUCT_ID, Ta_feng$AMOUNT, Ta_feng$ASSET, Ta_feng$SALES_PRICE)
+colnames(Z) <- c('Y', 'm', 'd', 'CUSTOMER_ID', 'AGE_GROUP', 'PIN_CODE', 'PRODUCT_SUBCLASS','PRODUCT_ID', 'AMOUNT', 'ASSET', 'SALES_PRICE')
+Z$AGE_GROUP[is.na(Z$AGE_GROUP)] = "na"
+Z$AGE_GROUP = factor(Z$AGE_GROUP, levels=c(
+  "<25","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64",">65","na"), labels=c(
+  "1","2","3","4","5","6","7","8","9","10","na"
+  )) %>% as.character
+```
+```{r}
+Z <- na.omit(Z) 
+summary(Z)
+```
+
+```{r}
+del <- which(Z$PIN_CODE == "Unknown")
+Z[del,]
+Z <- Z[-del,]
+Z
+```
+
+```{r}
+class(Z$PRODUCT_SUBCLASS)
+table(Z$PRODUCT_SUBCLASS)
+```
+
+```{r}
+save(Z, file = "Ta_Feng_1.rdata")
+```
+
+
+```{r}
+write.csv(Z, file = "Ta_Feng_1.csv")
+```
+
+
+```{r}
+aa <-read.csv('Ta_Feng_1.csv')
+aa
+```
+
